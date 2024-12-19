@@ -1,0 +1,6 @@
+stravalib
+dotenv
+flask
+pandas
+arrow
+collections
