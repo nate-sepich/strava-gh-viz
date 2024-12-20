@@ -1,0 +1,8 @@
+[build]
+  functions = "functions"
+
+[[redirects]]
+  from = "/oauth/callback"
+  to = "/.netlify/functions/auth"
+  status = 200
+  force = true

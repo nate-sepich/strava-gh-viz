@@ -4,3 +4,4 @@ flask
 pandas
 arrow
 collections
+Flask-Cors

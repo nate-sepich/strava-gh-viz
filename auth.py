@@ -34,7 +34,7 @@ def load_token():
             return json.load(f)
     return None
 
-@app.route('/authorized')
+@app.route('/api/authorized')
 def authorized():
     """
     Endpoint to handle the authorization callback from Strava.
@@ -43,14 +43,18 @@ def authorized():
     global access_token
     code = request.args.get('code')
     client = Client()
-    token_response = client.exchange_code_for_token(
-        client_id=CLIENT_ID,
-        client_secret=CLIENT_SECRET,
-        code=code
-    )
-    access_token = token_response['access_token']
-    save_token(token_response)
-    return "Authorization successful! You can close this window."
+    try:
+        token_response = client.exchange_code_for_token(
+            client_id=CLIENT_ID,
+            client_secret=CLIENT_SECRET,
+            code=code
+        )
+        access_token = token_response['access_token']
+        save_token(token_response)
+        return "Authorization successful! You can close this window."
+    except Exception as e:
+        print(f"Authorization failed: {e}")
+        return "Authorization failed. Please check the logs for more details."
 
 def refresh_token_if_needed(client):
     """
@@ -82,7 +86,7 @@ def get_access_token():
     if not access_token:
         authorize_url = client.authorization_url(
             client_id=CLIENT_ID,
-            redirect_uri='http://localhost:5000/authorized',
+            redirect_uri='http://localhost:5000/api/authorized',
             scope=['read_all', 'profile:read_all', 'activity:read_all']
         )
         print(f"Please authorize the app by visiting this URL: {authorize_url}")
