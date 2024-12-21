@@ -29,17 +29,34 @@ function loadToken() {
 
 exports.handler = async (event, context) => {
     let code;
-    try {
-        const body = JSON.parse(event.body);
-        if (!body.code) {
-            throw new Error("Missing 'code' in request body.");
+
+    if (event.httpMethod === 'GET') {
+        code = event.queryStringParameters.code;
+        if (!code) {
+            console.error("Missing 'code' in query parameters.");
+            return {
+                statusCode: 400,
+                body: JSON.stringify({ error: "Invalid request. 'code' is required in query parameters." }),
+            };
         }
-        code = body.code;
-    } catch (error) {
-        console.error("Invalid request body:", error);
+    } else if (event.httpMethod === 'POST') {
+        try {
+            const body = JSON.parse(event.body);
+            if (!body.code) {
+                throw new Error("Missing 'code' in request body.");
+            }
+            code = body.code;
+        } catch (error) {
+            console.error("Invalid request body:", error);
+            return {
+                statusCode: 400,
+                body: JSON.stringify({ error: "Invalid request body. 'code' is required." }),
+            };
+        }
+    } else {
         return {
-            statusCode: 400,
-            body: JSON.stringify({ error: "Invalid request body. 'code' is required." }),
+            statusCode: 405,
+            body: JSON.stringify({ error: "Method not allowed. Use GET or POST." }),
         };
     }
 
