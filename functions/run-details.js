@@ -1,7 +1,7 @@
 const { getAccessToken } = require('./auth');
+const fetch = require('node-fetch');
 
 exports.handler = async (event, context) => {
-    const fetch = (await import('node-fetch')).default;
     const STRAVA_API_URL = "https://www.strava.com/api/v3/athlete/activities";
 
     const token = event.queryStringParameters.access_token;

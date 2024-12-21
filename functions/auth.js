@@ -3,6 +3,7 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI;
 
 const fs = require("fs");
+const fetch = require('node-fetch');
 
 function saveToken(tokenResponse) {
     const tokenData = {
@@ -27,7 +28,6 @@ function loadToken() {
 }
 
 exports.handler = async (event, context) => {
-    const fetch = (await import('node-fetch')).default;
     const code = JSON.parse(event.body).code;
 
     try {
@@ -69,7 +69,6 @@ exports.handler = async (event, context) => {
 };
 
 async function refreshTokenIfNeeded() {
-    const fetch = (await import('node-fetch')).default;
     const tokenInfo = loadToken();
 
     if (tokenInfo && tokenInfo.expires_at < Math.floor(Date.now() / 1000)) {
