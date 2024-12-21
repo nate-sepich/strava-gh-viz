@@ -28,7 +28,20 @@ function loadToken() {
 }
 
 exports.handler = async (event, context) => {
-    const code = JSON.parse(event.body).code;
+    let code;
+    try {
+        const body = JSON.parse(event.body);
+        if (!body.code) {
+            throw new Error("Missing 'code' in request body.");
+        }
+        code = body.code;
+    } catch (error) {
+        console.error("Invalid request body:", error);
+        return {
+            statusCode: 400,
+            body: JSON.stringify({ error: "Invalid request body. 'code' is required." }),
+        };
+    }
 
     try {
         const tokenResponse = await fetch("https://www.strava.com/oauth/token", {
