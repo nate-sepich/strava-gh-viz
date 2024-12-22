@@ -4,6 +4,22 @@ const fetch = require('node-fetch');
 exports.handler = async (event, context) => {
     const STRAVA_API_URL = "https://www.strava.com/api/v3/athlete/activities";
 
+    // Define CORS headers
+    const headers = {
+        "Access-Control-Allow-Origin": "https://nate-sepich.github.io",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Authorization, Content-Type",
+    };
+
+    // Handle CORS Preflight
+    if (event.httpMethod === 'OPTIONS') {
+        return {
+            statusCode: 200,
+            headers: headers,
+            body: '',
+        };
+    }
+
     // Extract token from Authorization header
     const authHeader = event.headers['Authorization'] || event.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -11,11 +27,7 @@ exports.handler = async (event, context) => {
     if (!token) {
         return {
             statusCode: 401,
-            headers: {
-                "Access-Control-Allow-Origin": "https://nate-sepich.github.io", // Added CORS header
-                "Access-Control-Allow-Methods": "POST",
-                "Access-Control-Allow-Headers": "Authorization, Content-Type",
-            },
+            headers: headers,
             body: JSON.stringify({ error: "Access token is missing." }),
         };
     }
@@ -43,22 +55,14 @@ exports.handler = async (event, context) => {
 
         return {
             statusCode: 200,
-            headers: {
-                "Access-Control-Allow-Origin": "https://nate-sepich.github.io", // Added CORS header
-                "Access-Control-Allow-Methods": "POST",
-                "Access-Control-Allow-Headers": "Authorization, Content-Type",
-            },
+            headers: headers,
             body: JSON.stringify(runDetails),
         };
     } catch (error) {
         console.error("Error fetching run details:", error);
         return {
             statusCode: 500,
-            headers: {
-                "Access-Control-Allow-Origin": "https://nate-sepich.github.io", // Added CORS header
-                "Access-Control-Allow-Methods": "POST",
-                "Access-Control-Allow-Headers": "Authorization, Content-Type",
-            },
+            headers: headers,
             body: JSON.stringify({ error: error.message }),
         };
     }
