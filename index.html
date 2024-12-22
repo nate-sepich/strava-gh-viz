@@ -275,8 +275,8 @@
             });
 
             // Generate heatmap using the provided heatmapData structure
-            for (let i = 0; i < 7; i++) { // Days of the week
-                for (let j = 0; j < 52; j++) { // Weeks of the year
+            for (let j = 0; j < 52; j++) { // Weeks of the year
+                for (let i = 0; i < 7; i++) { // Days of the week
                     const daySquare = document.createElement('div');
                     daySquare.className = 'day';
                     const intensity = Math.min(Math.floor((heatmapData.z[i][j] || 0) / 2), 4); // Adjust intensity
