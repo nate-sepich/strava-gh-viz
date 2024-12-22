@@ -152,7 +152,27 @@
     <input type="hidden" id="expires_at">
 
     <script>
+        // Function to parse query parameters and store tokens
+        function parseTokens() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const accessToken = urlParams.get('access_token');
+            const refreshToken = urlParams.get('refresh_token');
+            const expiresAt = urlParams.get('expires_at');
+
+            if (accessToken) {
+                // Store tokens in hidden fields
+                document.getElementById('access_token').value = accessToken;
+                document.getElementById('refresh_token').value = refreshToken;
+                document.getElementById('expires_at').value = expiresAt;
+
+                // Optionally, clear tokens from URL for security
+                window.history.replaceState({}, document.title, "/strava-gh-viz/");
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', async function () {
+            parseTokens();
+
             const accessTokenField = document.getElementById('access_token');
             const expiresAtField = document.getElementById('expires_at');
 

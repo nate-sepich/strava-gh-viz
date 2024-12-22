@@ -69,7 +69,7 @@ exports.handler = async (event, context) => {
                 client_secret: CLIENT_SECRET,
                 code: code,
                 grant_type: "authorization_code",
-                redirect_uri: REDIRECT_URI, // Now points to frontend
+                redirect_uri: REDIRECT_URI, // Points to frontend
             }),
         });
 
