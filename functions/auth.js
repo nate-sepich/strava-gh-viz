@@ -4,32 +4,20 @@ const REDIRECT_URI = process.env.REDIRECT_URI;
 
 const fs = require("fs");
 const fetch = require('node-fetch');
-const path = require("path");
 
-// Directory to store tokens per user
-const TOKEN_DIR = '/tmp/strava_tokens';
-
-// Ensure the token directory exists
-if (!fs.existsSync(TOKEN_DIR)){
-    fs.mkdirSync(TOKEN_DIR);
-}
-
-function saveToken(username, tokenResponse) {
+function saveToken(tokenResponse) {
     const tokenData = {
         access_token: tokenResponse.access_token,
         refresh_token: tokenResponse.refresh_token,
         expires_at: tokenResponse.expires_at,
     };
 
-    const tokenPath = path.join(TOKEN_DIR, `${username}.json`);
-    fs.writeFileSync(tokenPath, JSON.stringify(tokenData));
-    console.log(`Token saved for username: ${username}`); // Debugging log
+    fs.writeFileSync('/tmp/strava_token.json', JSON.stringify(tokenData));
 }
 
-function loadToken(username) {
-    const tokenPath = path.join(TOKEN_DIR, `${username}.json`);
-    if (fs.existsSync(tokenPath)) {
-        const tokenData = JSON.parse(fs.readFileSync(tokenPath));
+function loadToken() {
+    if (fs.existsSync('/tmp/strava_token.json')) {
+        const tokenData = JSON.parse(fs.readFileSync('/tmp/strava_token.json'));
         return {
             access_token: tokenData.access_token,
             refresh_token: tokenData.refresh_token,
@@ -39,29 +27,11 @@ function loadToken(username) {
     return null;
 }
 
-// Export getAccessToken for use in run-details.js
-exports.getAccessToken = async function(username) {
-    const tokenInfo = loadToken(username);
-    console.log(`Loaded token for username '${username}':`, tokenInfo); // Debugging log
-
-    if (tokenInfo) {
-        if (tokenInfo.expires_at < Math.floor(Date.now() / 1000)) {
-            console.log(`Token for username '${username}' has expired. Attempting to refresh...`); // Debugging log
-            const newToken = await refreshTokenIfNeeded(username);
-            return newToken;
-        }
-        return tokenInfo.access_token;
-    }
-    return null;
-};
-
 exports.handler = async (event, context) => {
     let code;
-    let state;
 
     if (event.httpMethod === 'GET') {
         code = event.queryStringParameters.code;
-        state = event.queryStringParameters.state;
         if (!code) {
             console.error("Missing 'code' in query parameters.");
             return {
@@ -72,16 +42,15 @@ exports.handler = async (event, context) => {
     } else if (event.httpMethod === 'POST') {
         try {
             const body = JSON.parse(event.body);
-            if (!body.code || !body.state) {
-                throw new Error("Missing 'code' or 'state' in request body.");
+            if (!body.code) {
+                throw new Error("Missing 'code' in request body.");
             }
             code = body.code;
-            state = body.state;
         } catch (error) {
             console.error("Invalid request body:", error);
             return {
                 statusCode: 400,
-                body: JSON.stringify({ error: "Invalid request body. 'code' and 'state' are required." }),
+                body: JSON.stringify({ error: "Invalid request body. 'code' is required." }),
             };
         }
     } else {
@@ -90,8 +59,6 @@ exports.handler = async (event, context) => {
             body: JSON.stringify({ error: "Method not allowed. Use GET or POST." }),
         };
     }
-
-    const username = state || 'default';
 
     try {
         const tokenResponse = await fetch("https://www.strava.com/oauth/token", {
@@ -111,10 +78,10 @@ exports.handler = async (event, context) => {
         }
 
         const tokenData = await tokenResponse.json();
-        saveToken(username, tokenData);
+        saveToken(tokenData);
 
         // Redirect back to frontend with token data in query string
-        const frontendUrl = `${REDIRECT_URI}${username}?access_token=${tokenData.access_token}&expires_at=${tokenData.expires_at}&refresh_token=${tokenData.refresh_token}`;
+        const frontendUrl = `${REDIRECT_URI}?access_token=${tokenData.access_token}&expires_at=${tokenData.expires_at}&refresh_token=${tokenData.refresh_token}`;
 
         return {
             statusCode: 302,
@@ -131,8 +98,8 @@ exports.handler = async (event, context) => {
     }
 };
 
-async function refreshTokenIfNeeded(username) {
-    const tokenInfo = loadToken(username);
+async function refreshTokenIfNeeded() {
+    const tokenInfo = loadToken();
 
     if (tokenInfo && tokenInfo.expires_at < Math.floor(Date.now() / 1000)) {
         try {
@@ -145,7 +112,6 @@ async function refreshTokenIfNeeded(username) {
                     grant_type: "refresh_token",
                     refresh_token: tokenInfo.refresh_token,
                 }),
-    return tokenInfo ? tokenInfo.access_token : null;
             });
 
             if (!refreshResponse.ok) {
@@ -153,16 +119,12 @@ async function refreshTokenIfNeeded(username) {
             }
 
             const refreshData = await refreshResponse.json();
-            saveToken(username, refreshData);
-            console.log(`Token refreshed for username: ${username}`); // Debugging log
+            saveToken(refreshData);
             return refreshData.access_token;
         } catch (error) {
             console.error("Failed to refresh token:", error);
             return null;
         }
     }
-    console.log(`No need to refresh token for username: ${username}`); // Debugging log
     return tokenInfo ? tokenInfo.access_token : null;
-}
-
 }

@@ -5,17 +5,6 @@ exports.handler = async (event, context) => {
     const STRAVA_API_URL = "https://www.strava.com/api/v3/athlete/activities";
     let year = 2024; // Default year
 
-    // Define CORS headers
-    const headers = {
-        "Access-Control-Allow-Origin": "https://nate-sepich.github.io",
-        "Access-Control-Allow-Methods": "POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Authorization, Content-Type",
-    };
-
-    // Extract username from query parameters
-    const username = event.queryStringParameters && event.queryStringParameters.username ? event.queryStringParameters.username : 'default';
-    console.log(`Received request for username: ${username}`); // Debugging log
-
     // Extract year from query parameters or request body
     if (event.httpMethod === 'GET') {
         const query = event.queryStringParameters;
@@ -44,7 +33,14 @@ exports.handler = async (event, context) => {
     const startOfYear = Math.floor(new Date(`${year}-01-01T00:00:00Z`).getTime() / 1000);
     const endOfYear = Math.floor(new Date(`${year}-12-31T23:59:59Z`).getTime() / 1000);
 
-    console.log(`Fetching run activities for user '${username}' in year ${year} (Timestamp range: ${startOfYear} - ${endOfYear})`);
+    console.log(`Fetching run activities for the year ${year} (Timestamp range: ${startOfYear} - ${endOfYear})`);
+
+    // Define CORS headers
+    const headers = {
+        "Access-Control-Allow-Origin": "https://nate-sepich.github.io",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Authorization, Content-Type",
+    };
 
     // Handle CORS Preflight
     if (event.httpMethod === 'OPTIONS') {
@@ -55,9 +51,9 @@ exports.handler = async (event, context) => {
         };
     }
 
-    // Extract token using the username
-    const token = await getAccessToken(username);
-    console.log(`Retrieved access token for user '${username}': ${token}`); // Debugging log
+    // Extract token from Authorization header
+    const authHeader = event.headers['Authorization'] || event.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
 
     if (!token) {
         console.log("Access token is missing.");
@@ -109,7 +105,7 @@ exports.handler = async (event, context) => {
             }
         }
 
-        console.log(`Total runs fetched for ${username} in ${year}: ${allRuns.length}`);
+        console.log(`Total runs fetched for ${year}: ${allRuns.length}`);
 
         return {
             statusCode: 200,
