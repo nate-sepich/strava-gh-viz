@@ -4,6 +4,6 @@
 **token.json**
 
 # Local Netlify folder
-.netlify
-"sendgrid.env"
+.netlify/
+sendgrid.env
 .env

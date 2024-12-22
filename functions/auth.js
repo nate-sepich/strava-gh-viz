@@ -23,6 +23,7 @@ function saveToken(username, tokenResponse) {
 
     const tokenPath = path.join(TOKEN_DIR, `${username}.json`);
     fs.writeFileSync(tokenPath, JSON.stringify(tokenData));
+    console.log(`Token saved for username: ${username}`); // Debugging log
 }
 
 function loadToken(username) {
@@ -37,6 +38,22 @@ function loadToken(username) {
     }
     return null;
 }
+
+// Export getAccessToken for use in run-details.js
+exports.getAccessToken = async function(username) {
+    const tokenInfo = loadToken(username);
+    console.log(`Loaded token for username '${username}':`, tokenInfo); // Debugging log
+
+    if (tokenInfo) {
+        if (tokenInfo.expires_at < Math.floor(Date.now() / 1000)) {
+            console.log(`Token for username '${username}' has expired. Attempting to refresh...`); // Debugging log
+            const newToken = await refreshTokenIfNeeded(username);
+            return newToken;
+        }
+        return tokenInfo.access_token;
+    }
+    return null;
+};
 
 exports.handler = async (event, context) => {
     let code;
@@ -128,6 +145,7 @@ async function refreshTokenIfNeeded(username) {
                     grant_type: "refresh_token",
                     refresh_token: tokenInfo.refresh_token,
                 }),
+    return tokenInfo ? tokenInfo.access_token : null;
             });
 
             if (!refreshResponse.ok) {
@@ -136,11 +154,15 @@ async function refreshTokenIfNeeded(username) {
 
             const refreshData = await refreshResponse.json();
             saveToken(username, refreshData);
+            console.log(`Token refreshed for username: ${username}`); // Debugging log
             return refreshData.access_token;
         } catch (error) {
             console.error("Failed to refresh token:", error);
             return null;
         }
     }
+    console.log(`No need to refresh token for username: ${username}`); // Debugging log
     return tokenInfo ? tokenInfo.access_token : null;
+}
+
 }
