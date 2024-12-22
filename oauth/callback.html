@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,6 +10,7 @@
         const state = urlParams.get('state');
 
         if (code) {
+            console.log('Authorization code received:', code); // Add this line for debugging
             // Redirect to Netlify function with the authorization code
             window.location.href = `https://euphonious-mochi-90f5d4.netlify.app/.netlify/functions/auth?code=${code}&state=${state}`;
         } else {

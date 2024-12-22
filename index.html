@@ -187,14 +187,15 @@
 
         async function fetchAndDisplayRuns(accessToken) {
             try {
-                const response = await fetch('/.netlify/functions/run-details', {
+                const response = await fetch('https://euphonious-mochi-90f5d4.netlify.app/.netlify/functions/run-details', {
                     method: 'POST',
                     headers: { Authorization: `Bearer ${accessToken}` },
                 });
-
+    
                 if (!response.ok) throw new Error('Failed to fetch run details.');
-
+    
                 const runDetails = await response.json();
+                console.log('Run Details:', runDetails); // Add this line for debugging
                 displayHeatmap(runDetails);
             } catch (error) {
                 console.error('Error fetching run details:', error);

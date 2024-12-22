@@ -11,6 +11,11 @@ exports.handler = async (event, context) => {
     if (!token) {
         return {
             statusCode: 401,
+            headers: {
+                "Access-Control-Allow-Origin": "https://nate-sepich.github.io", // Added CORS header
+                "Access-Control-Allow-Methods": "POST",
+                "Access-Control-Allow-Headers": "Authorization, Content-Type",
+            },
             body: JSON.stringify({ error: "Access token is missing." }),
         };
     }
@@ -38,12 +43,22 @@ exports.handler = async (event, context) => {
 
         return {
             statusCode: 200,
+            headers: {
+                "Access-Control-Allow-Origin": "https://nate-sepich.github.io", // Added CORS header
+                "Access-Control-Allow-Methods": "POST",
+                "Access-Control-Allow-Headers": "Authorization, Content-Type",
+            },
             body: JSON.stringify(runDetails),
         };
     } catch (error) {
         console.error("Error fetching run details:", error);
         return {
             statusCode: 500,
+            headers: {
+                "Access-Control-Allow-Origin": "https://nate-sepich.github.io", // Added CORS header
+                "Access-Control-Allow-Methods": "POST",
+                "Access-Control-Allow-Headers": "Authorization, Content-Type",
+            },
             body: JSON.stringify({ error: error.message }),
         };
     }
