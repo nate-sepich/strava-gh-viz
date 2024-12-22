@@ -5,6 +5,9 @@ exports.handler = async (event, context) => {
     const STRAVA_API_URL = "https://www.strava.com/api/v3/athlete/activities";
     let year = 2024; // Default year
 
+    // Extract username from query parameters
+    const username = event.queryStringParameters && event.queryStringParameters.username ? event.queryStringParameters.username : 'default';
+
     // Extract year from query parameters or request body
     if (event.httpMethod === 'GET') {
         const query = event.queryStringParameters;
@@ -33,7 +36,7 @@ exports.handler = async (event, context) => {
     const startOfYear = Math.floor(new Date(`${year}-01-01T00:00:00Z`).getTime() / 1000);
     const endOfYear = Math.floor(new Date(`${year}-12-31T23:59:59Z`).getTime() / 1000);
 
-    console.log(`Fetching run activities for the year ${year} (Timestamp range: ${startOfYear} - ${endOfYear})`);
+    console.log(`Fetching run activities for user '${username}' in year ${year} (Timestamp range: ${startOfYear} - ${endOfYear})`);
 
     // Define CORS headers
     const headers = {
@@ -105,7 +108,7 @@ exports.handler = async (event, context) => {
             }
         }
 
-        console.log(`Total runs fetched for ${year}: ${allRuns.length}`);
+        console.log(`Total runs fetched for ${username} in ${year}: ${allRuns.length}`);
 
         return {
             statusCode: 200,
