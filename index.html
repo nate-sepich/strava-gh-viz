@@ -105,6 +105,17 @@
     <h1>Strava Activity Heatmap</h1>
     <p id="profile-info"></p>
 
+    <!-- Year Selection Dropdown -->
+    <div>
+        <label for="year-select">Select Year:</label>
+        <select id="year-select">
+            <option value="2024">2024</option>
+            <option value="2023" selected>2023</option>
+            <option value="2022">2022</option>
+            <!-- Add more years as needed -->
+        </select>
+    </div>
+
     <div class="heatmap-container">
         <div class="y-axis">
             <div>Sun</div>
@@ -175,54 +186,114 @@
 
             const accessTokenField = document.getElementById('access_token');
             const expiresAtField = document.getElementById('expires_at');
+            const yearSelect = document.getElementById('year-select');
 
             // Check if token exists and is still valid
             const now = Math.floor(Date.now() / 1000);
             if (accessTokenField.value && parseInt(expiresAtField.value) > now) {
-                await fetchAndDisplayRuns(accessTokenField.value);
+                await fetchAndDisplayRuns(accessTokenField.value, yearSelect.value);
             } else {
                 document.getElementById('authorize').style.display = 'block';
             }
+
+            // Add event listener for year selection
+            yearSelect.addEventListener('change', async function () {
+                const selectedYear = this.value;
+                console.log(`Year selected: ${selectedYear}`);
+                await fetchAndDisplayRuns(accessTokenField.value, selectedYear);
+            });
         });
 
-        async function fetchAndDisplayRuns(accessToken) {
+        async function fetchAndDisplayRuns(accessToken, year) {
             try {
                 const response = await fetch('https://euphonious-mochi-90f5d4.netlify.app/.netlify/functions/run-details', {
                     method: 'POST',
-                    headers: { Authorization: `Bearer ${accessToken}` },
+                    headers: { 
+                        Authorization: `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ year: year }),
                 });
-    
+
                 if (!response.ok) throw new Error('Failed to fetch run details.');
-    
+
                 const runDetails = await response.json();
-                console.log('Run Details:', runDetails); // Add this line for debugging
-                displayHeatmap(runDetails);
+                console.log(`Run Details for ${year}:`, runDetails); // Debugging log
+
+                // Pass run details to displayHeatmap with date mapping
+                displayHeatmap(runDetails, year);
             } catch (error) {
                 console.error('Error fetching run details:', error);
             }
         }
 
-        function displayHeatmap(runDetails) {
+        function displayHeatmap(runDetails, year) {
             const heatmapContainer = document.getElementById('heatmap');
             heatmapContainer.innerHTML = ''; // Clear existing heatmap
 
             if (runDetails.length === 0) {
-                heatmapContainer.innerHTML = "<p>No run activities found.</p>";
+                heatmapContainer.innerHTML = "<p>No run activities found for this year.</p>";
                 return;
             }
 
-            runDetails.forEach((run) => {
-                const daySquare = document.createElement('div');
-                daySquare.className = 'day';
-                daySquare.dataset.intensity = Math.min(Math.floor(run.distance / 2), 4);
+            // Initialize a map to count runs per day
+            const runMap = {};
 
-                const tooltip = document.createElement('div');
-                tooltip.className = 'tooltip';
-                tooltip.innerText = `${run.name} - ${run.distance} miles`;
+            runDetails.forEach(run => {
+                const date = new Date(run.start_date);
+                const month = date.getMonth(); // 0-indexed
+                const day = date.getDate(); // 1-31
 
-                daySquare.appendChild(tooltip);
-                heatmapContainer.appendChild(daySquare);
+                const key = `${month + 1}-${day}`; // e.g., "3-15"
+                if (runMap[key]) {
+                    runMap[key] += parseFloat(run.distance);
+                } else {
+                    runMap[key] = parseFloat(run.distance);
+                }
             });
+
+            console.log('Run Map:', runMap); // Debugging log
+
+            // Generate heatmap for the selected year
+            const firstDayOfYear = new Date(`${year}-01-01`);
+            const lastDayOfYear = new Date(`${year}-12-31`);
+
+            // Calculate the number of weeks in the selected year
+            const weeks = Math.ceil((lastDayOfYear - firstDayOfYear) / (7 * 24 * 60 * 60 * 1000));
+
+            // Adjust heatmap grid based on the number of weeks
+            const heatmap = document.getElementById('heatmap');
+            heatmap.style.gridTemplateColumns = `repeat(${weeks}, 10px)`;
+
+            for (let week = 0; week < weeks; week++) {
+                for (let day = 0; day < 7; day++) {
+                    const currentDate = new Date(firstDayOfYear);
+                    currentDate.setDate(currentDate.getDate() + week * 7 + day);
+
+                    if (currentDate > lastDayOfYear) break;
+
+                    const month = currentDate.getMonth();
+                    const dayOfMonth = currentDate.getDate();
+                    const key = `${month + 1}-${dayOfMonth}`;
+                    const distance = runMap[key] ? runMap[key] : 0;
+                    const intensity = Math.min(Math.floor(distance / 2), 4); // Adjust intensity based on distance
+
+                    const daySquare = document.createElement('div');
+                    daySquare.className = 'day';
+                    daySquare.dataset.intensity = intensity;
+
+                    if (distance > 0) {
+                        const tooltip = document.createElement('div');
+                        tooltip.className = 'tooltip';
+                        tooltip.innerText = `Distance: ${distance.toFixed(2)} miles on ${currentDate.toDateString()}`;
+                        daySquare.appendChild(tooltip);
+                    }
+
+                    heatmap.appendChild(daySquare);
+                }
+            }
+
+            console.log('Heatmap generated for the selected year.');
         }
     </script>
 </body>
