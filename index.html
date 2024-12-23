@@ -259,7 +259,7 @@
                     if (distance > 0) {
                         const tooltip = document.createElement('div');
                         tooltip.className = 'tooltip';
-                        tooltip.innerText = `Distance: ${distance.toFixed(2)} miles on ${currentDate.toDateString()}`;
+                        tooltip.innerText = `${distance.toFixed(2)} miles on ${currentDate.toDateString()}`;
                         daySquare.appendChild(tooltip);
                     }
                     heatmapContainer.appendChild(daySquare);
