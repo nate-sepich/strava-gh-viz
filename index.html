@@ -37,6 +37,7 @@
             grid-template-rows: repeat(7, 10px);
             gap: 2px;
             grid-auto-flow: column; /* ensure day squares flow top-to-bottom per column */
+            margin-top: 10px; /* optional top margin for additional separation */
         }
 
         .day {
@@ -79,7 +80,7 @@
             display: grid;
             justify-items: center;
             position: relative;
-            margin-bottom: 6px;
+            margin-bottom: 24px; /* increase spacing so text doesn't overlap squares */
         }
         .month-label {
             font-size: 10px;
