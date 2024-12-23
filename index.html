@@ -75,13 +75,16 @@
             opacity: 1;
         }
 
-        .x-axis {
-            display: flex;
-            justify-content: space-between;
-            width: 600px;
-            margin-top: 10px;
-            font-size: 12px;
-            font-weight: bold;
+        .month-label-container {
+            display: grid;
+            justify-items: center;
+            position: relative;
+            margin-bottom: 6px;
+        }
+        .month-label {
+            font-size: 10px;
+            position: absolute;
+            top: 0;
         }
 
         .legend {
@@ -117,20 +120,7 @@
             <div></div>
         </div>
         <div>
-            <div class="x-axis">
-                <div>Jan</div>
-                <div>Feb</div>
-                <div>Mar</div>
-                <div>Apr</div>
-                <div>May</div>
-                <div>Jun</div>
-                <div>Jul</div>
-                <div>Aug</div>
-                <div>Sep</div>
-                <div>Oct</div>
-                <div>Nov</div>
-                <div>Dec</div>
-            </div>
+            <div class="month-label-container" id="month-label-container"></div>
             <div class="heatmap" id="heatmap"></div>
         </div>
     </div>
@@ -224,28 +214,42 @@
 
         function displayHeatmap(runMap) {
             const heatmapContainer = document.getElementById('heatmap');
-            heatmapContainer.innerHTML = ''; // Clear existing heatmap
+            const monthLabelContainer = document.getElementById('month-label-container');
+            heatmapContainer.innerHTML = ''; // Clear existing squares
+            monthLabelContainer.innerHTML = ''; // Clear existing labels
 
-            const firstDayOfYear = new Date();
-            firstDayOfYear.setDate(firstDayOfYear.getDate() - 365);
-            const lastDayOfYear = new Date();
-            // Calculate total weeks in the chosen year
-            const weeksInYear = Math.ceil((lastDayOfYear - firstDayOfYear) / (7 * 24 * 3600 * 1000));
+            const firstDayOfRange = new Date();
+            firstDayOfRange.setDate(firstDayOfRange.getDate() - 365);
+            const lastDayOfRange = new Date();
+            const weeksInRange = Math.ceil((lastDayOfRange - firstDayOfRange) / (7 * 24 * 3600 * 1000));
 
-            // Dynamically set grid columns based on the actual weeks
-            heatmapContainer.style.gridTemplateColumns = `repeat(${weeksInYear}, 10px)`;
+            // Dynamically set columns
+            heatmapContainer.style.gridTemplateColumns = `repeat(${weeksInRange}, 10px)`;
 
-            // Iterate through each week, then each day of the week
-            for (let w = 0; w < weeksInYear; w++) {
+            // Generate squares column by column
+            for (let w = 0; w < weeksInRange; w++) {
+                // Date that corresponds to the Sunday (topmost cell) of this week
+                const startOfWeek = new Date(firstDayOfRange);
+                startOfWeek.setDate(startOfWeek.getDate() + (w * 7));
+
+                // If this week's Sunday is the first week of a new month, label it
+                if (startOfWeek.getDate() <= 7) {
+                    const monthShort = startOfWeek.toLocaleString('default', { month: 'short' });
+                    const label = document.createElement('div');
+                    label.className = 'month-label';
+                    label.style.left = `${w * 10}px`; // Position label over this column
+                    label.textContent = monthShort;
+                    monthLabelContainer.appendChild(label);
+                }
+
+                // For each day in the week (Sun-Sat top to bottom)
                 for (let d = 0; d < 7; d++) {
-                    const currentDate = new Date(firstDayOfYear);
-                    currentDate.setDate(currentDate.getDate() + w * 7 + d);
-                    if (currentDate > lastDayOfYear) break;
+                    const currentDate = new Date(startOfWeek);
+                    currentDate.setDate(currentDate.getDate() + d);
+                    if (currentDate > lastDayOfRange) break;
 
-                    const month = currentDate.getMonth() + 1;
-                    const dayOfMonth = currentDate.getDate();
-                    const key = `${month}-${dayOfMonth}`;
-                    const distance = runMap[key] || 0; // Sum of runs for that date
+                    const key = `${currentDate.getMonth() + 1}-${currentDate.getDate()}`;
+                    const distance = runMap[key] || 0;
                     const intensity = Math.min(Math.floor(distance / 2), 4);
 
                     const daySquare = document.createElement('div');
@@ -255,16 +259,13 @@
                     if (distance > 0) {
                         const tooltip = document.createElement('div');
                         tooltip.className = 'tooltip';
-                        tooltip.innerText =
-                            `Distance: ${distance.toFixed(2)} miles on ${currentDate.toDateString()}`;
+                        tooltip.innerText = `Distance: ${distance.toFixed(2)} miles on ${currentDate.toDateString()}`;
                         daySquare.appendChild(tooltip);
                     }
-
                     heatmapContainer.appendChild(daySquare);
                 }
             }
-
-            console.log('Heatmap generated for the selected year.');
+            console.log('Heatmap generated for the rolling 365-day window.');
         }
     </script>
 </body>
