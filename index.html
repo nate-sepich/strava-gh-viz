@@ -81,7 +81,8 @@
             display: grid;
             justify-items: center;
             position: relative;
-            width: calc(52 * 10px + 51 * 2px); /* match heatmap’s total width of 622px */
+            /* remove the fixed width so it can be set dynamically via JS */
+            /* width: calc(52 * 10px + 51 * 2px); */
         }
         .month-label {
             font-size: 10px;
@@ -226,6 +227,10 @@
             const weeksInRange = Math.ceil((lastDayOfRange - firstDayOfRange) / (7 * 24 * 3600 * 1000));
 
             heatmapContainer.style.gridTemplateColumns = `repeat(${weeksInRange}, 10px)`;
+
+            // Dynamically set the month-label-container width
+            const totalWidth = weeksInRange * 10 + (weeksInRange - 1) * 2; 
+            monthLabelContainer.style.width = totalWidth + 'px';
 
             let prevMonth = null;
 
