@@ -215,31 +215,32 @@
         function displayHeatmap(runMap) {
             const heatmapContainer = document.getElementById('heatmap');
             const monthLabelContainer = document.getElementById('month-label-container');
-            heatmapContainer.innerHTML = ''; // Clear existing squares
-            monthLabelContainer.innerHTML = ''; // Clear existing labels
+            heatmapContainer.innerHTML = ''; 
+            monthLabelContainer.innerHTML = '';
 
             const firstDayOfRange = new Date();
             firstDayOfRange.setDate(firstDayOfRange.getDate() - 365);
             const lastDayOfRange = new Date();
             const weeksInRange = Math.ceil((lastDayOfRange - firstDayOfRange) / (7 * 24 * 3600 * 1000));
 
-            // Dynamically set columns
             heatmapContainer.style.gridTemplateColumns = `repeat(${weeksInRange}, 10px)`;
 
-            // Generate squares column by column
-            for (let w = 0; w < weeksInRange; w++) {
-                // Date that corresponds to the Sunday (topmost cell) of this week
-                const startOfWeek = new Date(firstDayOfRange);
-                startOfWeek.setDate(startOfWeek.getDate() + (w * 7));
+            let prevMonth = null;
 
-                // If this week's Sunday is the first week of a new month, label it
-                if (startOfWeek.getDate() <= 7) {
+            for (let w = 0; w < weeksInRange; w++) {
+                const startOfWeek = new Date(firstDayOfRange);
+                startOfWeek.setDate(startOfWeek.getDate() + w * 7);
+
+                // Check if we've reached a new month
+                const currentMonth = startOfWeek.getMonth();
+                if (currentMonth !== prevMonth) {
                     const monthShort = startOfWeek.toLocaleString('default', { month: 'short' });
                     const label = document.createElement('div');
                     label.className = 'month-label';
-                    label.style.left = `${w * 10}px`; // Position label over this column
+                    label.style.left = `${w * 10}px`;
                     label.textContent = monthShort;
                     monthLabelContainer.appendChild(label);
+                    prevMonth = currentMonth;
                 }
 
                 // For each day in the week (Sun-Sat top to bottom)
