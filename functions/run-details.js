@@ -3,37 +3,25 @@ const fetch = require('node-fetch');
 
 exports.handler = async (event, context) => {
     const STRAVA_API_URL = "https://www.strava.com/api/v3/athlete/activities";
-    let year = 2024; // Default year
 
-    // Extract year from query parameters or request body
-    if (event.httpMethod === 'GET') {
-        const query = event.queryStringParameters;
-        if (query && query.year) {
-            year = parseInt(query.year, 10);
-            console.log(`Received year parameter from GET: ${year}`);
-        }
-    } else if (event.httpMethod === 'POST') {
-        try {
-            const body = JSON.parse(event.body);
-            if (body.year) {
-                year = parseInt(body.year, 10);
-                console.log(`Received year parameter from POST: ${year}`);
-            }
-        } catch (error) {
-            console.error("Invalid JSON body:", error);
-            return {
-                statusCode: 400,
-                headers: headers,
-                body: JSON.stringify({ error: "Invalid JSON body." }),
-            };
+    let afterTimestamp, beforeTimestamp;
+    if (event.httpMethod === 'POST') {
+        const body = JSON.parse(event.body);
+        if (body.startDate && body.endDate) {
+            afterTimestamp = Math.floor(new Date(body.startDate).getTime() / 1000);
+            beforeTimestamp = Math.floor(new Date(body.endDate).getTime() / 1000);
         }
     }
+    // Fallback: last 365 days if none provided
+    if (!afterTimestamp || !beforeTimestamp) {
+        const now = new Date();
+        const start = new Date();
+        start.setDate(now.getDate() - 365);
+        afterTimestamp = Math.floor(start.getTime() / 1000);
+        beforeTimestamp = Math.floor(now.getTime() / 1000);
+    }
 
-    // Calculate UNIX timestamps for the start and end of the selected year
-    const startOfYear = Math.floor(new Date(`${year}-01-01T00:00:00Z`).getTime() / 1000);
-    const endOfYear = Math.floor(new Date(`${year}-12-31T23:59:59Z`).getTime() / 1000);
-
-    console.log(`Fetching run activities for the year ${year} (Timestamp range: ${startOfYear} - ${endOfYear})`);
+    console.log(`Fetching runs from ${afterTimestamp} to ${beforeTimestamp}`);
 
     // Define CORS headers
     const headers = {
@@ -73,7 +61,7 @@ exports.handler = async (event, context) => {
         console.log(`Fetching run activities starting from page ${page}`);
 
         while (morePages) {
-            const activitiesResponse = await fetch(`${STRAVA_API_URL}?per_page=${perPage}&page=${page}&after=${startOfYear}&before=${endOfYear}`, {
+            const activitiesResponse = await fetch(`${STRAVA_API_URL}?per_page=${perPage}&page=${page}&after=${afterTimestamp}&before=${beforeTimestamp}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -105,7 +93,7 @@ exports.handler = async (event, context) => {
             }
         }
 
-        console.log(`Total runs fetched for ${year}: ${allRuns.length}`);
+        console.log(`Total runs fetched: ${allRuns.length}`);
 
         return {
             statusCode: 200,
