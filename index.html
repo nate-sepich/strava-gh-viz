@@ -228,9 +228,9 @@
 
             heatmapContainer.style.gridTemplateColumns = `repeat(${weeksInRange}, 10px)`;
 
-            // Dynamically set the month-label-container width
-            const totalWidth = weeksInRange * 10 + (weeksInRange - 1) * 2; 
-            monthLabelContainer.style.width = totalWidth + 'px';
+            // Remove the old manual calculation:
+            // const totalWidth = weeksInRange * 10 + ...
+            // monthLabelContainer.style.width = totalWidth + 'px';
 
             let prevMonth = null;
 
@@ -273,6 +273,12 @@
                     heatmapContainer.appendChild(daySquare);
                 }
             }
+
+            // Once squares are rendered, measure the actual width
+            requestAnimationFrame(() => {
+                monthLabelContainer.style.width = heatmapContainer.offsetWidth + 'px';
+            });
+
             console.log('Heatmap generated for the rolling 365-day window.');
         }
     </script>
