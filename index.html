@@ -233,50 +233,65 @@
 
         function prepareHeatmapData(runDetails, year) {
             const heatmapData = {
-                z: Array.from({ length: 7 }, () => Array(52).fill(0)),
-                text: Array.from({ length: 7 }, () => Array(52).fill('')),
+                z: [],
+                text: [],
             };
+
+            // Initialize heatmapData with 53 weeks (to account for leap years)
+            for (let i = 0; i < 7; i++) {
+                heatmapData.z[i] = Array(53).fill(0);
+                heatmapData.text[i] = Array(53).fill('');
+            }
+
+            const firstDayOfYear = new Date(`${year}-01-01`);
+            const lastDayOfYear = new Date(`${year}-12-31`);
+            const firstWeekDay = firstDayOfYear.getDay(); // 0 (Sun) to 6 (Sat)
 
             runDetails.forEach(run => {
                 const date = new Date(run.start_date);
                 const runYear = date.getFullYear();
                 if (runYear !== parseInt(year, 10)) return;
 
-                const month = date.getMonth();
-                const day = date.getDate();
-                const week = getWeekNumber(date) - 1; // 0-indexed
-                const weekday = date.getDay(); // 0 (Sun) to 6 (Sat)
+                // Calculate week number considering the first Sunday
+                let week = getWeekNumber(date) - 1; // 0-indexed
+                let weekday = date.getDay(); // 0 (Sun) to 6 (Sat)
 
-                if (week >= 52) return; // Prevent out-of-bounds
+                // Adjust for the first week offset
+                if (week === 0 && firstWeekDay !== 0) {
+                    // If the first day of the year is not Sunday, shift to week 1
+                    week = 1;
+                }
+
+                if (week >= 53) return; // Prevent out-of-bounds
 
                 heatmapData.z[weekday][week] += parseFloat(run.distance);
-                heatmapData.text[weekday][week] += `Distance: ${run.distance.toFixed(2)} miles on ${date.toDateString()}\n`;
+                heatmapData.text[weekday][week] += `Distance: ${run.distance.toFixed(2)} miles on ${date.toLocaleDateString()}\n`;
             });
 
             return heatmapData;
         }
 
         function getWeekNumber(d) {
-            d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-            d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
-            const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
-            const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1)/7);
-            return weekNo;
+            // Copy date so don't modify original
+            const date = new Date(d.getTime());
+            date.setHours(0, 0, 0, 0);
+            // Set to nearest Sunday
+            date.setDate(date.getDate() - date.getDay());
+            // January 1st
+            const jan1 = new Date(date.getFullYear(), 0, 1);
+            // Calculate full weeks to nearest Sunday
+            const diff = date - jan1;
+            const weekNumber = Math.ceil((diff / 86400000) / 7) + 1;
+            return weekNumber;
         }
 
         function displayHeatmap(heatmapData) {
             const heatmapContainer = document.getElementById('heatmap');
             heatmapContainer.innerHTML = ''; // Clear existing heatmap
 
-            document.addEventListener('DOMContentLoaded', function () {
-                const heatmapDataJSON = JSON.stringify(heatmapData);
-                // The following line would typically be replaced with server-side templating
-                // For this example, we'll assume heatmapData is directly available
-            });
-
             // Generate heatmap using the provided heatmapData structure
-            for (let j = 0; j < 52; j++) { // Weeks of the year
-                for (let i = 0; i < 7; i++) { // Days of the week
+            for (let j = 0; j < 53; j++) { // Weeks of the year (0-52)
+                for (let i = 0; i < 7; i++) { // Days of the week (0: Sun - 6: Sat)
                     const daySquare = document.createElement('div');
                     daySquare.className = 'day';
                     const intensity = Math.min(Math.floor((heatmapData.z[i][j] || 0) / 2), 4); // Adjust intensity
@@ -285,10 +300,13 @@
                     if (heatmapData.z[i][j] > 0) {
                         const tooltip = document.createElement('div');
                         tooltip.className = 'tooltip';
-                        const date = new Date(heatmapData.text[i][j].split(' on ')[1]);
-                        const formattedDate = date.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
-                        tooltip.innerText = heatmapData.text[i][j].replace(/on \d{4}-\d{2}-\d{2}/, `on ${formattedDate}`);
-                        daySquare.appendChild(tooltip);
+                        const dateString = heatmapData.text[i][j].split(' on ')[1];
+                        if (dateString) {
+                            const date = new Date(dateString);
+                            const formattedDate = date.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+                            tooltip.innerText = heatmapData.text[i][j].replace(/on \d{1,2}\/\d{1,2}\/\d{4}/, `on ${formattedDate}`);
+                            daySquare.appendChild(tooltip);
+                        }
                     }
 
                     heatmapContainer.appendChild(daySquare);
