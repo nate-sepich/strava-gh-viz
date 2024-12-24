@@ -254,6 +254,23 @@
                         tooltip.innerText = `${distance.toFixed(2)} miles on ${currentDate.toDateString()}`;
                         daySquare.appendChild(tooltip);
                     }
+
+                    daySquare.addEventListener('mouseenter', () => {
+                        const tooltip = daySquare.querySelector('.tooltip');
+                        if (tooltip) {
+                            tooltip.style.visibility = 'visible';
+                            tooltip.style.opacity = '1';
+                        }
+                    });
+
+                    daySquare.addEventListener('mouseleave', () => {
+                        const tooltip = daySquare.querySelector('.tooltip');
+                        if (tooltip) {
+                            tooltip.style.visibility = 'hidden';
+                            tooltip.style.opacity = '0';
+                        }
+                    });
+
                     heatmapContainer.appendChild(daySquare);
                 }
             }
