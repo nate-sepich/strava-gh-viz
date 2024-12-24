@@ -88,6 +88,7 @@
             font-size: 10px;
             position: absolute;
             top: -2px; /* Moved up by 2 pixels */
+            white-space: nowrap; /* Prevent text wrapping */
         }
 
         .legend {
@@ -278,6 +279,16 @@
             }
 
             monthLabelContainer.style.width = `${heatmapContainer.offsetWidth}px`;
+
+            // Adjust month labels to prevent overlap
+            const monthLabels = monthLabelContainer.querySelectorAll('.month-label');
+            for (let i = 1; i < monthLabels.length; i++) {
+                const prevLabel = monthLabels[i - 1];
+                const currentLabel = monthLabels[i];
+                if (currentLabel.offsetLeft - prevLabel.offsetLeft < 20) { // Adjust the value as needed
+                    currentLabel.style.left = `${prevLabel.offsetLeft + 20}px`;
+                }
+            }
         }
     </script>
 </body>
