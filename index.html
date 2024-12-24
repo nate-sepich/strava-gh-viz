@@ -62,13 +62,14 @@
             padding: 5px;
             position: absolute;
             z-index: 1;
-            bottom: 120%;
+            bottom: 150%; /* Adjusted to ensure tooltip is above the square */
             left: 50%;
             transform: translateX(-50%);
             opacity: 0;
             transition: opacity 0.2s;
             width: 255px;
             white-space: normal;
+            pointer-events: none; /* Ensure tooltip does not interfere with mouse events */
         }
 
         .day:hover .tooltip {
@@ -84,7 +85,7 @@
         .month-label {
             font-size: 10px;
             position: absolute;
-            top: 0;
+            top: -2px; /* Moved up by 2 pixels */
         }
 
         .legend {
