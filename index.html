@@ -251,12 +251,14 @@
                     daySquare.className = 'day';
                     daySquare.dataset.intensity = intensity;
 
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'tooltip';
                     if (distance > 0) {
-                        const tooltip = document.createElement('div');
-                        tooltip.className = 'tooltip';
                         tooltip.innerText = `${distance.toFixed(2)} miles on ${currentDate.toDateString()}`;
-                        daySquare.appendChild(tooltip);
+                    } else {
+                        tooltip.innerText = `No miles on ${currentDate.toDateString()}`;
                     }
+                    daySquare.appendChild(tooltip);
 
                     heatmapContainer.appendChild(daySquare);
                 }
@@ -268,6 +270,10 @@
             for (let i = currentDays; i < totalDays; i++) {
                 const emptyDaySquare = document.createElement('div');
                 emptyDaySquare.className = 'day';
+                const tooltip = document.createElement('div');
+                tooltip.className = 'tooltip';
+                tooltip.innerText = `No miles on ${new Date(firstDayOfRange.getTime() + i * 24 * 3600 * 1000).toDateString()}`;
+                emptyDaySquare.appendChild(tooltip);
                 heatmapContainer.appendChild(emptyDaySquare);
             }
 
