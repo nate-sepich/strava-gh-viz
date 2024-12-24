@@ -54,6 +54,7 @@
         .day[data-intensity="2"] { background-color: #7bc96f; }
         .day[data-intensity="3"] { background-color: #239a3b; }
         .day[data-intensity="4"] { background-color: #196127; }
+        .day[data-intensity="0"] { background-color: hsl(0, 3%, 30%); } /* Ensure visible grey for intensity 0 */
 
         .tooltip {
             visibility: hidden;
@@ -243,7 +244,7 @@
 
                     const daySquare = document.createElement('div');
                     daySquare.className = 'day';
-                    daySquare.dataset.intensity = intensity;
+                    daySquare.dataset.intensity = distance > 0 ? intensity : 0; // Set data intensity for 0 values
 
                     const tooltip = document.createElement('div');
                     tooltip.className = 'tooltip';
@@ -265,7 +266,7 @@
             for (let i = 1; i < monthLabels.length; i++) {
                 const prevLabel = monthLabels[i - 1];
                 const currentLabel = monthLabels[i];
-                if (currentLabel.offsetLeft - prevLabel.offsetLeft < 5) { // Adjust the value as needed
+                if (currentLabel.offsetLeft - prevLabel.offsetLeft < 10) { // Adjust the value as needed
                     currentLabel.style.left = `${prevLabel.offsetLeft + 55}px`;
                 }
             }
