@@ -39,6 +39,7 @@
             gap: 2px; /* Matches the y-axis gap */
             grid-auto-flow: column; /* Ensures squares flow top-to-bottom per column */
             margin-top: 10px;
+            overflow: visible; /* Prevent tooltip clipping */
         }
 
         .day {
@@ -257,24 +258,17 @@
                         daySquare.appendChild(tooltip);
                     }
 
-                    daySquare.addEventListener('mouseenter', () => {
-                        const tooltip = daySquare.querySelector('.tooltip');
-                        if (tooltip) {
-                            tooltip.style.visibility = 'visible';
-                            tooltip.style.opacity = '1';
-                        }
-                    });
-
-                    daySquare.addEventListener('mouseleave', () => {
-                        const tooltip = daySquare.querySelector('.tooltip');
-                        if (tooltip) {
-                            tooltip.style.visibility = 'hidden';
-                            tooltip.style.opacity = '0';
-                        }
-                    });
-
                     heatmapContainer.appendChild(daySquare);
                 }
+            }
+
+            // Add empty .day elements to fill the remaining days of the year
+            const totalDays = 365;
+            const currentDays = heatmapContainer.children.length;
+            for (let i = currentDays; i < totalDays; i++) {
+                const emptyDaySquare = document.createElement('div');
+                emptyDaySquare.className = 'day';
+                heatmapContainer.appendChild(emptyDaySquare);
             }
 
             monthLabelContainer.style.width = `${heatmapContainer.offsetWidth}px`;
