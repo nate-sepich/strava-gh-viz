@@ -285,7 +285,7 @@
             for (let i = 1; i < monthLabels.length; i++) {
                 const prevLabel = monthLabels[i - 1];
                 const currentLabel = monthLabels[i];
-                if (currentLabel.offsetLeft - prevLabel.offsetLeft < 20) { // Adjust the value as needed
+                if (currentLabel.offsetLeft - prevLabel.offsetLeft < 5) { // Adjust the value as needed
                     currentLabel.style.left = `${prevLabel.offsetLeft + 20}px`;
                 }
             }
