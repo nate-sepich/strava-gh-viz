@@ -93,12 +93,26 @@ exports.handler = async (event, context) => {
             }
         }
 
+        // Fill in missing dates with zero distance
+        const runMap = {};
+        const startDate = new Date(afterTimestamp * 1000);
+        const endDate = new Date(beforeTimestamp * 1000);
+        for (let d = startDate; d <= endDate; d.setDate(d.getDate() + 1)) {
+            const key = `${d.getMonth() + 1}-${d.getDate()}`;
+            runMap[key] = 0;
+        }
+        allRuns.forEach(run => {
+            const date = new Date(run.start_date);
+            const key = `${date.getMonth() + 1}-${date.getDate()}`;
+            runMap[key] += parseFloat(run.distance);
+        });
+
         console.log(`Total runs fetched: ${allRuns.length}`);
 
         return {
             statusCode: 200,
             headers: headers,
-            body: JSON.stringify(allRuns),
+            body: JSON.stringify(runMap),
         };
     } catch (error) {
         console.error("Error fetching run details:", error);

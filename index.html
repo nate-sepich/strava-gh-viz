@@ -195,14 +195,7 @@
 
                 if (!response.ok) throw new Error('Failed to fetch run details.');
 
-                const runDetails = await response.json();
-                const runMap = {};
-                runDetails.forEach(run => {
-                    const date = new Date(run.start_date);
-                    const key = `${date.getMonth() + 1}-${date.getDate()}`;
-                    runMap[key] = (runMap[key] || 0) + parseFloat(run.distance);
-                });
-
+                const runMap = await response.json();
                 displayHeatmap(runMap);
             } catch (error) {
                 console.error('Error fetching run details:', error);
@@ -263,19 +256,6 @@
 
                     heatmapContainer.appendChild(daySquare);
                 }
-            }
-
-            // Add empty .day elements to fill the remaining days of the year
-            const totalDays = 365;
-            const currentDays = heatmapContainer.children.length;
-            for (let i = currentDays; i < totalDays; i++) {
-                const emptyDaySquare = document.createElement('div');
-                emptyDaySquare.className = 'day';
-                const tooltip = document.createElement('div');
-                tooltip.className = 'tooltip';
-                tooltip.innerText = `No miles on ${new Date(firstDayOfRange.getTime() + i * 24 * 3600 * 1000).toDateString()}`;
-                emptyDaySquare.appendChild(tooltip);
-                heatmapContainer.appendChild(emptyDaySquare);
             }
 
             monthLabelContainer.style.width = `${heatmapContainer.offsetWidth}px`;
