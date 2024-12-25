@@ -40,7 +40,7 @@
             grid-auto-flow: column; /* Ensures squares flow top-to-bottom per column */
             margin-top: 10px;
             overflow: visible; /* Prevent tooltip clipping */
-            background-color: transparent
+            background-color: transparent; /* Remove background color */
         }
 
         .day {
@@ -220,6 +220,7 @@
             heatmapContainer.style.gridTemplateColumns = `repeat(${weeksInRange}, 10px)`;
 
             let prevMonth = null;
+            let prevMonthEndWeek = 0;
 
             for (let w = 0; w < weeksInRange; w++) {
                 const startOfWeek = new Date(firstDayOfRange);
@@ -235,11 +236,21 @@
                     } else {
                         const prevLabel = monthLabelContainer.lastChild;
                         const prevLeft = parseInt(prevLabel.style.left, 10);
-                        label.style.left = `${prevLeft + 11}px`; // New month starts at least 11 pixels to the right
+                        const weeksInPrevMonth = w - prevMonthEndWeek;
+                        let offset = 0;
+                        if (weeksInPrevMonth <= 2) {
+                            offset = 20;
+                        } else if (weeksInPrevMonth === 3) {
+                            offset = 30;
+                        } else if (weeksInPrevMonth >= 4) {
+                            offset = 40;
+                        }
+                        label.style.left = `${prevLeft + offset}px`; // New month starts based on previous month's weeks
                     }
                     label.textContent = monthShort;
                     monthLabelContainer.appendChild(label);
                     prevMonth = currentMonth;
+                    prevMonthEndWeek = w;
                 }
 
                 for (let d = 0; d < 7; d++) {
@@ -270,7 +281,7 @@
 
             monthLabelContainer.style.width = `${heatmapContainer.offsetWidth}px`;
 
-            // Adjust month labels to be evenly distributed after the first two
+            // Adjust month labels to be evenly distributed after the first one
             const monthLabels = monthLabelContainer.querySelectorAll('.month-label');
             const totalWidth = heatmapContainer.offsetWidth;
             const remainingWidth = totalWidth - parseInt(monthLabels[1].style.left, 10);
