@@ -13,13 +13,13 @@ REDIRECT_URI = os.getenv('REDIRECT_URI')
 
 def authenticate():
     client = Client()
-    authorize_url = client.authorization_url(
-        client_id=CLIENT_ID,
-        redirect_uri=REDIRECT_URI,
-        scope=['read_all', 'profile:read_all', 'activity:read_all']
-    )
-    print(f"Please authorize the app by visiting this URL: {authorize_url}")
-    code = input("Enter the authorization code: ")
+    # authorize_url = client.authorization_url(
+    #     client_id=CLIENT_ID,
+    #     redirect_uri=REDIRECT_URI,
+    #     scope=['read_all', 'profile:read_all', 'activity:read_all']
+    # )
+    # print(f"Please authorize the app by visiting this URL: {authorize_url}")
+    code = "a4eeaf2194bafada7969a167015b4628fa64924f"
     token_response = client.exchange_code_for_token(
         client_id=CLIENT_ID,
         client_secret=CLIENT_SECRET,
@@ -27,7 +27,7 @@ def authenticate():
     )
     return token_response
 
-def fetch_data(client, access_token):
+def fetch_data(client: Client, access_token):
     client.access_token = access_token
     athlete = client.get_athlete()
     activities = client.get_activities(limit=200)
@@ -37,16 +37,14 @@ def fetch_data(client, access_token):
             run_details.append({
                 'id': activity.id,
                 'name': activity.name,
-                'distance': round(activity.distance.num / 1609.34, 2),  # meters to miles
-                'duration': round(activity.moving_time.seconds / 60, 2),  # seconds to minutes
+                'distance': round(activity.distance.real / 1609.34, 2),  # meters to miles
+                'duration': round(activity.moving_time.real / 60, 2),  # seconds to minutes
                 'start_date': activity.start_date.strftime('%Y-%m-%d')
             })
     return {
         'athlete': {
             'name': athlete.firstname + ' ' + athlete.lastname,
             'avatar': athlete.profile,
-            'total_runs': athlete.years_running,
-            'total_mileage': round(athlete.total_distance.num / 1609.34, 2)
         },
         'run_details': run_details
     }
