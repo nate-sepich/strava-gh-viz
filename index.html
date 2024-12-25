@@ -276,6 +276,9 @@
                 const distanceUnit = isMetric ? 'km' : 'miles';
                 document.getElementById('profile-picture').src = 'components/profile_example.jpg'; // Example profile image
                 document.getElementById('profile-name').textContent = 'Example Data';
+                document.getElementById('profile-summary').innerHTML = `Total Runs: ${overview.totalRuns}<br>Total Distance: ${overview.totalDistance.toFixed(2)} ${distanceUnit}<br>Longest Run: ${overview.longestRun.toFixed(2)} ${distanceUnit}`;
+                document.getElementById('profile').style.display = 'flex';
+            }
 
             displayHeatmap(runMap, isMetric);
             displayLegend(runMap, isMetric);
