@@ -10,12 +10,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            margin: 0;
-            padding: 20px;
-            width: 100vw; /* Fit content to the page width */
-            height: 100vh; /* Fit content to the page height */
-            overflow: hidden; /* Prevent scrolling */
+            margin: 10px;
+            padding: 10px;
+            max-width: 100vw; /* Fit content to the page width */
         }
 
         .heatmap-container {
@@ -23,12 +20,9 @@
             grid-template-columns: auto 1fr;
             gap: 2px;
             align-items: start;
-            justify-content: center;
             margin-top: 2px; /* Move the heatmap up by 15px */
             background-color: transparent;
-            width: 100%; /* Fit content to the page width */
-            height: calc(100vh - 200px); /* Adjust height to fit within the page */
-            overflow: auto; /* Allow scrolling within the container */
+            max-width: 100%; /* Fit content to the page width */
         }
 
         .y-axis {
@@ -49,13 +43,12 @@
             grid-auto-flow: column;
             margin-top: 2px;
             overflow: visible;
-            justify-self: center;
+            max-width: 100%; /* Fit content to the page width */
         }
 
         .day {
             width: 10px;
             height: 10px;
-            background-color: #d3d3d3; /* Default to grey for 0 miles */
             position: relative;
             border: 1px solid #ccc;
         }
@@ -92,7 +85,6 @@
         .month-label-container {
             position: relative;
             height: 20px;
-            justify-self: center;
         }
 
         .month-label {
@@ -103,9 +95,8 @@
 
         .legend {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            margin-top: 15px; /* Move the legend down */
+            margin-top: 15px;
             font-size: 0.9em; /* Make legend text one size smaller */
         }
 
@@ -118,7 +109,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin-right: 10px;
+            margin-right: 5px;
         }
 
         .legend-color {
@@ -131,33 +122,6 @@
             display: flex;
             flex-direction: row;
             align-items: center;
-        }
-
-        .authorize-container {
-            margin-top: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .authorize-container img {
-            width: 24px;
-            height: 24px;
-            margin-right: 8px;
-        }
-
-        .profile-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-
-        .profile-container img {
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            margin-right: 10px;
         }
     </style>
 </head>
