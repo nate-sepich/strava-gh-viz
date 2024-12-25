@@ -257,7 +257,9 @@
 
                 if (athleteStats && athleteStats.all_run_totals) {
                     const distanceUnit = isMetric ? 'km' : 'miles';
-                    document.getElementById('profile-summary').innerHTML = `Total Runs: ${athleteStats.all_run_totals.count}<br>Total Distance: ${(athleteStats.all_run_totals.distance / (isMetric ? 1000 : 1609.34)).toFixed(2)} ${distanceUnit}<br>${(athleteStats.all_run_totals.distance / (isMetric ? 1000 : 1609.34)).toFixed(2)} ${distanceUnit} over ${athleteStats.all_run_totals.count} runs in the last year`;
+                    const totalDistance = Object.values(runMap).reduce((acc, distance) => acc + distance, 0);
+                    const totalRuns = Object.values(runMap).filter(distance => distance > 0).length;
+                    document.getElementById('profile-summary').innerHTML = `Total Runs: ${athleteStats.all_run_totals.count}<br>Total Distance: ${(athleteStats.all_run_totals.distance / (isMetric ? 1000 : 1609.34)).toFixed(2)} ${distanceUnit}<br><br>${totalDistance.toFixed(2)} ${distanceUnit} over ${totalRuns} runs in the last year`;
                 }
             }
 
