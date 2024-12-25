@@ -210,14 +210,25 @@
         function generateDummyRunMap(startDate, endDate, isMetric) {
             const runMap = {};
             let currentDate = new Date(startDate);
+            const overview = {
+                totalRuns: 0,
+                totalDistance: 0,
+                longestRun: 0
+            };
 
             while (currentDate <= endDate) {
                 const key = `${currentDate.getMonth() + 1}-${currentDate.getDate()}`;
-                runMap[key] = isMetric ? Math.random() * 16 : Math.random() * 10; // Random distance between 0 and 16 km or 0 and 10 miles
+                const distance = isMetric ? Math.random() * 16 : Math.random() * 10; // Random distance between 0 and 16 km or 0 and 10 miles
+                runMap[key] = distance;
+                overview.totalRuns += distance > 0 ? 1 : 0;
+                overview.totalDistance += distance;
+                if (distance > overview.longestRun) {
+                    overview.longestRun = distance;
+                }
                 currentDate.setDate(currentDate.getDate() + 1);
             }
 
-            return runMap;
+            return { runMap, overview };
         }
 
         async function initializeHeatmap() {
@@ -230,7 +241,7 @@
             const expiresAt = parseInt(document.getElementById('expires_at').value, 10);
             const currentTime = Math.floor(Date.now() / 1000);
 
-            let runMap, dataMode, profileData, athleteStats, isMetric;
+            let runMap, dataMode, profileData, athleteStats, isMetric, overview;
             if (accessToken && expiresAt > currentTime) {
                 const data = await fetchStravaData(accessToken, startDate, now);
                 if (data) {
@@ -240,11 +251,11 @@
                     isMetric = data.isMetric;
                     dataMode = "";
                 } else {
-                    runMap = generateDummyRunMap(startDate, now, isMetric);
+                    ({ runMap, overview } = generateDummyRunMap(startDate, now, isMetric));
                     dataMode = "Error fetching Strava data. Displaying dummy data.";
                 }
             } else {
-                runMap = generateDummyRunMap(startDate, now, isMetric);
+                ({ runMap, overview } = generateDummyRunMap(startDate, now, isMetric));
                 dataMode = "Displaying dummy data. Please authorize Strava for real data.";
             }
 
@@ -261,7 +272,10 @@
                     const totalRuns = Object.values(runMap).filter(distance => distance > 0).length;
                     document.getElementById('profile-summary').innerHTML = `Total Runs: ${athleteStats.all_run_totals.count}<br>Total Distance: ${(athleteStats.all_run_totals.distance / (isMetric ? 1000 : 1609.34)).toFixed(2)} ${distanceUnit}<br><br>${totalDistance.toFixed(2)} ${distanceUnit} over ${totalRuns} runs in the last year`;
                 }
-            }
+            } else {
+                const distanceUnit = isMetric ? 'km' : 'miles';
+                document.getElementById('profile-picture').src = 'components/profile_example.jpg'; // Example profile image
+                document.getElementById('profile-name').textContent = 'Example Data';
 
             displayHeatmap(runMap, isMetric);
             displayLegend(runMap, isMetric);
