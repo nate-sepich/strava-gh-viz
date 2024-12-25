@@ -12,6 +12,8 @@
             align-items: center;
             margin: 0;
             padding: 20px;
+            max-width: 100vw; /* Fit content to the page width */
+            overflow-x: hidden; /* Prevent horizontal scrolling */
         }
 
         .heatmap-container {
@@ -21,6 +23,7 @@
             align-items: start;
             margin-top: 2px; /* Move the heatmap up by 15px */
             background-color: transparent;
+            max-width: 100%; /* Fit content to the page width */
         }
 
         .y-axis {
@@ -41,6 +44,7 @@
             grid-auto-flow: column;
             margin-top: 2px;
             overflow: visible;
+            max-width: 100%; /* Fit content to the page width */
         }
 
         .day {
@@ -93,7 +97,6 @@
 
         .legend {
             display: flex;
-            flex-direction: column;
             align-items: center;
             margin-top: 10px;
             font-size: 0.9em; /* Make legend text one size smaller */
@@ -116,6 +119,12 @@
             height: 20px;
             margin-bottom: 5px;
         }
+
+        .legend-container {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
@@ -137,8 +146,9 @@
             <div class="heatmap" id="heatmap"></div>
         </div>
     </div>
-    <div class="legend" id="legend">
+    <div class="legend">
         <div class="legend-title">Mileage Legend</div>
+        <div class="legend-container" id="legend"></div>
     </div>
     <a id="authorize" href="https://www.strava.com/oauth/authorize?client_id=143068&redirect_uri=https%3A%2F%2Fnate-sepich.github.io%2Fstrava-gh-viz%2Foauth%2Fcallback&response_type=code&scope=activity:read_all">Authorize Strava</a>
 
