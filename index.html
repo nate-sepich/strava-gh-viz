@@ -89,6 +89,24 @@
             font-size: 10px;
             white-space: nowrap;
         }
+
+        .legend {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-right: 10px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+        }
     </style>
 </head>
 <body>
@@ -110,6 +128,7 @@
             <div class="heatmap" id="heatmap"></div>
         </div>
     </div>
+    <div class="legend" id="legend"></div>
     <a id="authorize" href="https://www.strava.com/oauth/authorize?client_id=143068&redirect_uri=https%3A%2F%2Fnate-sepich.github.io%2Fstrava-gh-viz%2Foauth%2Fcallback&response_type=code&scope=activity:read_all">Authorize Strava</a>
 
     <!-- Hidden fields for tokens -->
@@ -196,6 +215,7 @@
 
             document.getElementById('data-mode').textContent = dataMode;
             displayHeatmap(runMap);
+            displayLegend(runMap);
         }
 
         function displayHeatmap(runMap) {
@@ -257,6 +277,38 @@
                     heatmapContainer.appendChild(daySquare);
                 }
             }
+        }
+
+        function displayLegend(runMap) {
+            const legendContainer = document.getElementById('legend');
+            legendContainer.innerHTML = '';
+
+            const distances = Object.values(runMap);
+            const maxDistance = Math.max(...distances);
+            const step = maxDistance / 4;
+
+            const legendItems = [
+                { color: '#c6e48b', label: `0 - ${step.toFixed(2)} miles` },
+                { color: '#7bc96f', label: `${step.toFixed(2)} - ${(step * 2).toFixed(2)} miles` },
+                { color: '#239a3b', label: `${(step * 2).toFixed(2)} - ${(step * 3).toFixed(2)} miles` },
+                { color: '#196127', label: `${(step * 3).toFixed(2)}+ miles` },
+            ];
+
+            legendItems.forEach(item => {
+                const legendItem = document.createElement('div');
+                legendItem.className = 'legend-item';
+
+                const legendColor = document.createElement('div');
+                legendColor.className = 'legend-color';
+                legendColor.style.backgroundColor = item.color;
+
+                const legendLabel = document.createElement('span');
+                legendLabel.textContent = item.label;
+
+                legendItem.appendChild(legendColor);
+                legendItem.appendChild(legendLabel);
+                legendContainer.appendChild(legendItem);
+            });
         }
 
         document.addEventListener('DOMContentLoaded', initializeHeatmap);
