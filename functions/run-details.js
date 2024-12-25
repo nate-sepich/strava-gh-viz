@@ -73,7 +73,6 @@ exports.handler = async (event, context) => {
             console.log(`Fetched page ${page} with ${activitiesData.length} activities.`);
 
             const filteredRuns = activitiesData
-                .filter(activity => activity.type === "Run")
                 .map(activity => ({
                     id: activity.id,
                     name: activity.name,
