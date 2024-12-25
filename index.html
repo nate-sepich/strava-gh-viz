@@ -100,6 +100,7 @@
 
         .legend-item {
             display: flex;
+            flex-direction: column;
             align-items: center;
             margin-right: 10px;
         }
@@ -107,7 +108,7 @@
         .legend-color {
             width: 20px;
             height: 20px;
-            margin-right: 5px;
+            margin-bottom: 5px;
         }
     </style>
 </head>
@@ -296,8 +297,8 @@
 
             const legendItems = [
                 { color: '#c6e48b', label: `0.1+` },
-                { color: '#7bc96f', label: `${step.toFixed(2).replace(/^0+/, '')}+ miles` },
-                { color: '#239a3b', label: `${(step * 2).toFixed(2).replace(/^0+/, '')}+ miles` },
+                { color: '#7bc96f', label: `${step.toFixed(2).replace(/^0+/, '')}+` },
+                { color: '#239a3b', label: `${(step * 2).toFixed(2).replace(/^0+/, '')}+` },
                 { color: '#196127', label: `${(step * 3).toFixed(2).replace(/^0+/, '')}+ miles` },
             ];
 
