@@ -207,13 +207,13 @@
             }
         }
 
-        function generateDummyRunMap(startDate, endDate) {
+        function generateDummyRunMap(startDate, endDate, isMetric) {
             const runMap = {};
             let currentDate = new Date(startDate);
 
             while (currentDate <= endDate) {
                 const key = `${currentDate.getMonth() + 1}-${currentDate.getDate()}`;
-                runMap[key] = Math.random() * 10; // Random distance between 0 and 10 miles
+                runMap[key] = isMetric ? Math.random() * 16 : Math.random() * 10; // Random distance between 0 and 16 km or 0 and 10 miles
                 currentDate.setDate(currentDate.getDate() + 1);
             }
 
@@ -230,20 +230,21 @@
             const expiresAt = parseInt(document.getElementById('expires_at').value, 10);
             const currentTime = Math.floor(Date.now() / 1000);
 
-            let runMap, dataMode, profileData, athleteStats;
+            let runMap, dataMode, profileData, athleteStats, isMetric;
             if (accessToken && expiresAt > currentTime) {
                 const data = await fetchStravaData(accessToken, startDate, now);
                 if (data) {
                     runMap = data.runs;
                     profileData = data.profile;
                     athleteStats = data.stats;
+                    isMetric = data.isMetric;
                     dataMode = "";
                 } else {
-                    runMap = generateDummyRunMap(startDate, now);
+                    runMap = generateDummyRunMap(startDate, now, isMetric);
                     dataMode = "Error fetching Strava data. Displaying dummy data.";
                 }
             } else {
-                runMap = generateDummyRunMap(startDate, now);
+                runMap = generateDummyRunMap(startDate, now, isMetric);
                 dataMode = "Displaying dummy data. Please authorize Strava for real data.";
             }
 
@@ -255,15 +256,16 @@
                 document.getElementById('profile').style.display = 'flex';
 
                 if (athleteStats && athleteStats.all_run_totals) {
-                    document.getElementById('profile-summary').textContent = `Total Runs: ${athleteStats.all_run_totals.count}, Total Distance: ${(athleteStats.all_run_totals.distance / 1000).toFixed(2)} km`;
+                    const distanceUnit = isMetric ? 'km' : 'miles';
+                    document.getElementById('profile-summary').textContent = `Total Runs: ${athleteStats.all_run_totals.count}, Total Distance: ${(athleteStats.all_run_totals.distance / (isMetric ? 1000 : 1609.34)).toFixed(2)} ${distanceUnit}`;
                 }
             }
 
-            displayHeatmap(runMap);
-            displayLegend(runMap);
+            displayHeatmap(runMap, isMetric);
+            displayLegend(runMap, isMetric);
         }
 
-        function displayHeatmap(runMap) {
+        function displayHeatmap(runMap, isMetric) {
             const heatmapContainer = document.getElementById('heatmap');
             const monthLabelContainer = document.getElementById('month-label-container');
             heatmapContainer.innerHTML = '';
@@ -311,7 +313,7 @@
 
                     const key = `${currentDate.getMonth() + 1}-${currentDate.getDate()}`;
                     const distance = runMap[key] || 0;
-                    const intensity = distance > 0 ? Math.min(Math.floor(distance / 2), 4) : 0;
+                    const intensity = distance > 0 ? Math.min(Math.floor(distance / (isMetric ? 4 : 2)), 4) : 0;
 
                     const daySquare = document.createElement('div');
                     daySquare.className = 'day';
@@ -320,7 +322,7 @@
                     const tooltip = document.createElement('div');
                     tooltip.className = 'tooltip';
                     tooltip.innerText = distance > 0
-                        ? `${distance.toFixed(2)} miles on ${currentDate.toDateString()}`
+                        ? `${distance.toFixed(2)} ${isMetric ? 'km' : 'miles'} on ${currentDate.toDateString()}`
                         : `No activity on ${currentDate.toDateString()}`;
 
                     daySquare.appendChild(tooltip);
@@ -329,7 +331,7 @@
             }
         }
 
-        function displayLegend(runMap) {
+        function displayLegend(runMap, isMetric) {
             const legendContainer = document.getElementById('legend');
             legendContainer.innerHTML = '';
 

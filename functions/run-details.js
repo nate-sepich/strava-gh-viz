@@ -65,6 +65,7 @@ exports.handler = async (event, context) => {
         }
 
         const profileData = await profileResponse.json();
+        const isMetric = profileData.measurement_preference === 'meters';
 
         // Fetch athlete stats
         const statsResponse = await fetch(`${STRAVA_STATS_URL}/${profileData.id}/stats`, {
@@ -101,7 +102,7 @@ exports.handler = async (event, context) => {
                 .map(activity => ({
                     id: activity.id,
                     name: activity.name,
-                    distance: (activity.distance * 0.000621371).toFixed(2), // Convert meters to miles
+                    distance: isMetric ? (activity.distance / 1000).toFixed(2) : (activity.distance * 0.000621371).toFixed(2), // Convert meters to km or miles
                     duration: (activity.moving_time / 60).toFixed(2), // Convert seconds to minutes
                     start_date: activity.start_date,
                 }));
@@ -144,6 +145,7 @@ exports.handler = async (event, context) => {
                 profile: profileData,
                 stats: athleteStats,
                 runs: runMap,
+                isMetric: isMetric,
             }),
         };
     } catch (error) {
