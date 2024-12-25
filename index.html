@@ -94,6 +94,7 @@
             display: flex;
             align-items: center;
             margin-top: 10px;
+            font-size: 0.9em; /* Make legend text one size smaller */
         }
 
         .legend-item {
@@ -288,10 +289,10 @@
             const step = maxDistance / 4;
 
             const legendItems = [
-                { color: '#c6e48b', label: `0 - ${step.toFixed(2)} miles` },
-                { color: '#7bc96f', label: `${step.toFixed(2)} - ${(step * 2).toFixed(2)} miles` },
-                { color: '#239a3b', label: `${(step * 2).toFixed(2)} - ${(step * 3).toFixed(2)} miles` },
-                { color: '#196127', label: `${(step * 3).toFixed(2)}+ miles` },
+                { color: '#c6e48b', label: `0 - ${step.toFixed(2).replace(/^0+/, '')} miles` },
+                { color: '#7bc96f', label: `${step.toFixed(2).replace(/^0+/, '')} - ${(step * 2).toFixed(2).replace(/^0+/, '')} miles` },
+                { color: '#239a3b', label: `${(step * 2).toFixed(2).replace(/^0+/, '')} - ${(step * 3).toFixed(2).replace(/^0+/, '')} miles` },
+                { color: '#196127', label: `${(step * 3).toFixed(2).replace(/^0+/, '')}+ miles` },
             ];
 
             legendItems.forEach(item => {
