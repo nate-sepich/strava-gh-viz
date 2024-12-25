@@ -104,7 +104,10 @@ exports.handler = async (event, context) => {
         allRuns.forEach(run => {
             const date = new Date(run.start_date);
             const key = `${date.getMonth() + 1}-${date.getDate()}`;
-            runMap[key] += parseFloat(run.distance);
+            if (!runMap[key]) {
+                runMap[key] = 0;
+            }
+            runMap[key] += parseFloat(run.distance); // Sum the mileage for multiple runs on the same date
         });
 
         console.log(`Total runs fetched: ${allRuns.length}`);
