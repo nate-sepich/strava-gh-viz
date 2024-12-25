@@ -19,43 +19,41 @@
             grid-template-columns: auto 1fr;
             gap: 10px;
             align-items: start;
-            margin-top: 25px; /* move the whole heatmap down by 25px */
+            margin-top: 25px;
         }
 
         .y-axis {
             display: grid;
-            grid-template-rows: repeat(7, 10px); /* Matches the heatmap row height */
-            gap: 2px; /* Matches the heatmap gap */
-            margin-top: 10px; /* Aligns with the top of the heatmap */
+            grid-template-rows: repeat(7, 10px);
+            gap: 2px;
+            margin-top: 10px;
             text-align: right;
-            padding-right: 5px; /* Add slight spacing for better alignment */
+            padding-right: 5px;
             font-size: 10px;
         }
 
         .heatmap {
             display: grid;
             grid-template-columns: repeat(auto-fill, 10px);
-            grid-template-rows: repeat(7, 10px); /* Matches the y-axis rows */
-            gap: 2px; /* Matches the y-axis gap */
-            grid-auto-flow: column; /* Ensures squares flow top-to-bottom per column */
+            grid-template-rows: repeat(7, 10px);
+            gap: 2px;
+            grid-auto-flow: column;
             margin-top: 10px;
-            overflow: visible; /* Prevent tooltip clipping */
-            background-color: transparent; /* Remove background color */
+            overflow: visible;
         }
 
         .day {
             width: 10px;
             height: 10px;
-            background-color: #d3d3d3; /* Lighter grey for no activity */
-            position: relative; /* Ensure tooltips are positioned relative to the day square */
-            border: 1px solid #ccc; /* Add border to make squares visible */
+            background-color: #d3d3d3;
+            position: relative;
+            border: 1px solid #ccc;
         }
 
         .day[data-intensity="1"] { background-color: #c6e48b; }
         .day[data-intensity="2"] { background-color: #7bc96f; }
         .day[data-intensity="3"] { background-color: #239a3b; }
         .day[data-intensity="4"] { background-color: #196127; }
-        .day[data-intensity="0"] { background-color: #d3d3d3; } /* Ensure visible grey for intensity 0 */
 
         .tooltip {
             visibility: hidden;
@@ -66,14 +64,12 @@
             padding: 5px;
             position: absolute;
             z-index: 1;
-            bottom: 150%; /* Adjusted to ensure tooltip is above the square */
+            bottom: 150%;
             left: 50%;
             transform: translateX(-50%);
             opacity: 0;
             transition: opacity 0.2s;
-            width: 255px;
-            white-space: normal;
-            pointer-events: none; /* Ensure tooltip does not interfere with mouse events */
+            pointer-events: none;
         }
 
         .day:hover .tooltip {
@@ -82,41 +78,19 @@
         }
 
         .month-label-container {
-            display: flex;
-            justify-content: space-between; /* Distribute labels evenly */
             position: relative;
-            width: 100%;
+            height: 20px;
         }
 
         .month-label {
+            position: absolute;
             font-size: 10px;
-            position: relative;
-            top: -2px; /* Moved up by 2 pixels */
-            white-space: nowrap; /* Prevent text wrapping */
-        }
-
-        .legend {
-            display: flex;
-            align-items: center;
-            margin-top: 20px;
-        }
-
-        .legend span {
-            margin: 0 10px;
-            font-size: 14px;
-        }
-
-        .legend-color {
-            width: 20px;
-            height: 20px;
-            margin: 0 2px;
+            white-space: nowrap;
         }
     </style>
 </head>
 <body>
     <h1>Strava Activity Heatmap</h1>
-    <p id="profile-info"></p>
-
     <div class="heatmap-container">
         <div class="y-axis">
             <div></div>
@@ -132,17 +106,6 @@
             <div class="heatmap" id="heatmap"></div>
         </div>
     </div>
-
-    <div class="legend">
-        <span>Less Activity</span>
-        <div class="legend-color" style="background-color: #d3d3d3;"></div>
-        <div class="legend-color" style="background-color: #c6e48b;"></div>
-        <div class="legend-color" style="background-color: #7bc96f;"></div>
-        <div class="legend-color" style="background-color: #239a3b;"></div>
-        <div class="legend-color" style="background-color: #196127;"></div>
-        <span>More Activity</span>
-    </div>
-
     <a id="authorize" href="https://www.strava.com/oauth/authorize?client_id=143068&redirect_uri=https%3A%2F%2Fnate-sepich.github.io%2Fstrava-gh-viz%2Foauth%2Fcallback&response_type=code&scope=activity:read_all">Authorize Strava</a>
 
     <!-- Hidden fields for tokens -->
@@ -209,7 +172,7 @@
         function displayHeatmap(runMap) {
             const heatmapContainer = document.getElementById('heatmap');
             const monthLabelContainer = document.getElementById('month-label-container');
-            heatmapContainer.innerHTML = ''; 
+            heatmapContainer.innerHTML = '';
             monthLabelContainer.innerHTML = '';
 
             const firstDayOfRange = new Date();
@@ -231,22 +194,11 @@
                     const monthShort = startOfWeek.toLocaleString('default', { month: 'short' });
                     const label = document.createElement('div');
                     label.className = 'month-label';
-                    if (monthLabelContainer.children.length === 0) {
-                        label.style.left = '0px'; // Leading month on the far left
-                    } else {
-                        const prevLabel = monthLabelContainer.lastChild;
-                        const prevLeft = parseInt(prevLabel.style.left, 10);
-                        const weeksInPrevMonth = w - prevMonthEndWeek;
-                        let offset = 0;
-                        if (weeksInPrevMonth <= 2) {
-                            offset = 20;
-                        } else if (weeksInPrevMonth === 3) {
-                            offset = 30;
-                        } else if (weeksInPrevMonth >= 4) {
-                            offset = 40;
-                        }
-                        label.style.left = `${prevLeft + offset}px`; // New month starts based on previous month's weeks
-                    }
+
+                    const weeksSinceLastLabel = w - prevMonthEndWeek;
+                    const position = (weeksSinceLastLabel > 1) ? (w * 12) : (w * 8);
+
+                    label.style.left = `${position}px`;
                     label.textContent = monthShort;
                     monthLabelContainer.appendChild(label);
                     prevMonth = currentMonth;
@@ -264,37 +216,17 @@
 
                     const daySquare = document.createElement('div');
                     daySquare.className = 'day';
-                    daySquare.dataset.intensity = distance > 0 ? intensity : 0; // Set data intensity for 0 values
+                    daySquare.dataset.intensity = distance > 0 ? intensity : 0;
 
                     const tooltip = document.createElement('div');
                     tooltip.className = 'tooltip';
-                    if (distance > 0) {
-                        tooltip.innerText = `${distance.toFixed(2)} miles on ${currentDate.toDateString()}`;
-                    } else {
-                        tooltip.innerText = `No miles on ${currentDate.toDateString()}`;
-                    }
-                    daySquare.appendChild(tooltip);
+                    tooltip.innerText = distance > 0 ? `${distance.toFixed(2)} miles` : 'No activity';
 
+                    daySquare.appendChild(tooltip);
                     heatmapContainer.appendChild(daySquare);
                 }
-            }
-
-            monthLabelContainer.style.width = `${heatmapContainer.offsetWidth}px`;
-
-            // Adjust month labels to be evenly distributed after the first one
-            const monthLabels = monthLabelContainer.querySelectorAll('.month-label');
-            const totalWidth = heatmapContainer.offsetWidth;
-            const remainingWidth = totalWidth - parseInt(monthLabels[1].style.left, 10);
-            const spacing = remainingWidth / (monthLabels.length - 2);
-
-            for (let i = 2; i < monthLabels.length; i++) {
-                monthLabels[i].style.left = `${parseInt(monthLabels[i - 1].style.left, 10) + spacing}px`;
             }
         }
     </script>
 </body>
-</body>
-</html>
-
-
 </html>
