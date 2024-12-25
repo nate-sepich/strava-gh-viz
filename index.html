@@ -235,6 +235,11 @@
             let prevMonth = null;
             let prevMonthEndWeek = 0;
 
+            // Ensure the first day is a Monday
+            const firstDayOfWeek = firstDayOfRange.getDay();
+            const daysToMonday = (firstDayOfWeek + 6) % 7;
+            firstDayOfRange.setDate(firstDayOfRange.getDate() - daysToMonday);
+
             for (let w = 0; w < weeksInRange; w++) {
                 const startOfWeek = new Date(firstDayOfRange);
                 startOfWeek.setDate(firstDayOfRange.getDate() + w * 7);
@@ -289,9 +294,9 @@
             const step = maxDistance / 4;
 
             const legendItems = [
-                { color: '#c6e48b', label: `0 - ${step.toFixed(2).replace(/^0+/, '')} miles` },
-                { color: '#7bc96f', label: `${step.toFixed(2).replace(/^0+/, '')} - ${(step * 2).toFixed(2).replace(/^0+/, '')} miles` },
-                { color: '#239a3b', label: `${(step * 2).toFixed(2).replace(/^0+/, '')} - ${(step * 3).toFixed(2).replace(/^0+/, '')} miles` },
+                { color: '#c6e48b', label: `0.1+` },
+                { color: '#7bc96f', label: `${step.toFixed(2).replace(/^0+/, '')}+ miles` },
+                { color: '#239a3b', label: `${(step * 2).toFixed(2).replace(/^0+/, '')}+ miles` },
                 { color: '#196127', label: `${(step * 3).toFixed(2).replace(/^0+/, '')}+ miles` },
             ];
 
