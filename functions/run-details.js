@@ -3,6 +3,8 @@ const fetch = require('node-fetch');
 
 exports.handler = async (event, context) => {
     const STRAVA_API_URL = "https://www.strava.com/api/v3/athlete/activities";
+    const STRAVA_PROFILE_URL = "https://www.strava.com/api/v3/athlete";
+    const STRAVA_STATS_URL = "https://www.strava.com/api/v3/athletes";
 
     let afterTimestamp, beforeTimestamp;
     if (event.httpMethod === 'POST') {
@@ -53,6 +55,29 @@ exports.handler = async (event, context) => {
     }
 
     try {
+        // Fetch profile data
+        const profileResponse = await fetch(STRAVA_PROFILE_URL, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!profileResponse.ok) {
+            throw new Error(`Failed to fetch profile data: ${profileResponse.statusText}`);
+        }
+
+        const profileData = await profileResponse.json();
+
+        // Fetch athlete stats
+        const statsResponse = await fetch(`${STRAVA_STATS_URL}/${profileData.id}/stats`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!statsResponse.ok) {
+            throw new Error(`Failed to fetch athlete stats: ${statsResponse.statusText}`);
+        }
+
+        const athleteStats = await statsResponse.json();
+
+        // Fetch run activities
         let page = 1;
         const perPage = 200; // Maximum allowed by Strava
         let allRuns = [];
@@ -112,11 +137,14 @@ exports.handler = async (event, context) => {
         console.log(`Total runs fetched: ${allRuns.length}`);
         console.log(runMap);
 
-
         return {
             statusCode: 200,
             headers: headers,
-            body: JSON.stringify(runMap),
+            body: JSON.stringify({
+                profile: profileData,
+                stats: athleteStats,
+                runs: runMap,
+            }),
         };
     } catch (error) {
         console.error("Error fetching run details:", error);
