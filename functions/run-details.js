@@ -111,6 +111,8 @@ exports.handler = async (event, context) => {
         });
 
         console.log(`Total runs fetched: ${allRuns.length}`);
+        console.log(runMap);
+
 
         return {
             statusCode: 200,
