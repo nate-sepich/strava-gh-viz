@@ -50,7 +50,7 @@
         .day {
             width: 10px;
             height: 10px;
-            background-color: #d3d3d3;
+            background-color: #d3d3d3; /* Default to grey for 0 miles */
             position: relative;
             border: 1px solid #ccc;
         }
@@ -184,7 +184,7 @@
         <div class="legend-container" id="legend"></div>
     </div>
     <div class="authorize-container">
-        <img src="strava-icon.png" alt="Strava Icon">
+        <img src="components\com.strava-2363244030.png" alt="Strava Icon">
         <a id="authorize" href="https://www.strava.com/oauth/authorize?client_id=143068&redirect_uri=https%3A%2F%2Fnate-sepich.github.io%2Fstrava-gh-viz%2Foauth%2Fcallback&response_type=code&scope=activity:read_all">Authorize Strava</a>
     </div>
 
@@ -348,11 +348,11 @@
 
                     const key = `${currentDate.getMonth() + 1}-${currentDate.getDate()}`;
                     const distance = runMap[key] || 0;
-                    const intensity = Math.min(Math.floor(distance / 2), 4);
+                    const intensity = distance > 0 ? Math.min(Math.floor(distance / 2), 4) : 0;
 
                     const daySquare = document.createElement('div');
                     daySquare.className = 'day';
-                    daySquare.dataset.intensity = distance > 0 ? intensity : 0;
+                    daySquare.dataset.intensity = intensity;
 
                     const tooltip = document.createElement('div');
                     tooltip.className = 'tooltip';
