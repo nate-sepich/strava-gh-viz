@@ -230,7 +230,13 @@
                     const monthShort = startOfWeek.toLocaleString('default', { month: 'short' });
                     const label = document.createElement('div');
                     label.className = 'month-label';
-                    label.style.left = `${w * 12}px`;
+                    if (monthLabelContainer.children.length === 0) {
+                        label.style.left = '0px'; // Leading month on the far left
+                    } else {
+                        const prevLabel = monthLabelContainer.lastChild;
+                        const prevLeft = parseInt(prevLabel.style.left, 10);
+                        label.style.left = `${prevLeft + 11}px`; // New month starts at least 11 pixels to the right
+                    }
                     label.textContent = monthShort;
                     monthLabelContainer.appendChild(label);
                     prevMonth = currentMonth;
@@ -264,14 +270,14 @@
 
             monthLabelContainer.style.width = `${heatmapContainer.offsetWidth}px`;
 
-            // Adjust month labels to prevent overlap
+            // Adjust month labels to be evenly distributed after the first two
             const monthLabels = monthLabelContainer.querySelectorAll('.month-label');
-            for (let i = 1; i < monthLabels.length; i++) {
-                const prevLabel = monthLabels[i - 1];
-                const currentLabel = monthLabels[i];
-                if (currentLabel.offsetLeft - prevLabel.offsetLeft < 30) { // Adjust the value as needed
-                    currentLabel.style.left = `${prevLabel.offsetLeft + 30}px`;
-                }
+            const totalWidth = heatmapContainer.offsetWidth;
+            const remainingWidth = totalWidth - parseInt(monthLabels[1].style.left, 10);
+            const spacing = remainingWidth / (monthLabels.length - 2);
+
+            for (let i = 2; i < monthLabels.length; i++) {
+                monthLabels[i].style.left = `${parseInt(monthLabels[i - 1].style.left, 10) + spacing}px`;
             }
         }
     </script>
