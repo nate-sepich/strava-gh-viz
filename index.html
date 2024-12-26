@@ -270,13 +270,13 @@
                     const distanceUnit = isMetric ? 'km' : 'miles';
                     const totalDistance = Object.values(runMap).reduce((acc, distance) => acc + distance, 0);
                     const totalRuns = Object.values(runMap).filter(distance => distance > 0).length;
-                    document.getElementById('profile-summary').innerHTML = `Total Runs: ${athleteStats.all_run_totals.count}<br>Total Distance: ${(athleteStats.all_run_totals.distance / (isMetric ? 1000 : 1609.34)).toFixed(2)} ${distanceUnit}<br><br>${totalDistance.toFixed(2)} ${distanceUnit} over ${totalRuns} runs in the last year`;
+                    document.getElementById('profile-summary').innerHTML = `Total Runs: ${athleteStats.all_run_totals.count}<br>Total Distance: ${(athleteStats.all_run_totals.distance / (isMetric ? 1000 : 1609.34)).toFixed(2)} ${distanceUnit}<br><br>${totalDistance.toFixed(2)} ${distanceUnit} over ${totalRuns} runs in the last year<br>Longest Run: ${Math.max(...Object.values(runMap)).toFixed(2)} ${distanceUnit}`;
                 }
             } else {
                 const distanceUnit = isMetric ? 'km' : 'miles';
-                document.getElementById('profile-picture').src = 'components/profile_example.jpg'; // Example profile image
+                document.getElementById('profile-picture').src = 'components/profile_example.png'; // Example profile image
                 document.getElementById('profile-name').textContent = 'Example Data';
-                document.getElementById('profile-summary').innerHTML = `Total Runs: ${overview.totalRuns}<br>Total Distance: ${overview.totalDistance.toFixed(2)} ${distanceUnit}<br>Longest Run: ${overview.longestRun.toFixed(2)} ${distanceUnit}`;
+                document.getElementById('profile-summary').innerHTML = `Total Runs: ${overview.totalRuns}<br>Total Distance: ${overview.totalDistance.toFixed(2)} ${distanceUnit}<br>Longest Run: ${overview.longestRun.toFixed(2)} ${distanceUnit}<br>${overview.totalDistance.toFixed(2)} ${distanceUnit} over ${overview.totalRuns} runs in the last year`;
                 document.getElementById('profile').style.display = 'flex';
             }
 
