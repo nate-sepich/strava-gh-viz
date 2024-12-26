@@ -53,6 +53,7 @@
             border: 1px solid #ccc;
         }
 
+        .day[data-intensity="0"] { background-color: white; }
         .day[data-intensity="1"] { background-color: #c6e48b; }
         .day[data-intensity="2"] { background-color: #7bc96f; }
         .day[data-intensity="3"] { background-color: #239a3b; }
@@ -122,6 +123,12 @@
             display: flex;
             flex-direction: row;
             align-items: center;
+        }
+
+        .profile-container img {
+            width: 100px; /* Adjust the width as needed */
+            height: auto;
+            border-radius: 50%;
         }
     </style>
 </head>
