@@ -70,6 +70,7 @@ exports.handler = async (event, context) => {
                 code: code,
                 grant_type: "authorization_code",
                 redirect_uri: REDIRECT_URI, // Points to frontend
+                scope: 'read_all,profile:read_all,activity:read_all', // Added scopes
             }),
         });
 
