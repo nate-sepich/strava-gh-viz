@@ -23,7 +23,6 @@
             margin-top: 2px;
             background-color: transparent;
             max-width: 100%;
-            overflow-x: auto;
         }
 
         .y-axis {
@@ -38,7 +37,7 @@
 
         .heatmap {
             display: grid;
-            grid-template-columns: repeat(auto-fill, 10px);
+            grid-template-columns: repeat(52, 10px); /* Adjusted to fit within viewport */
             grid-template-rows: repeat(7, 10px);
             gap: 2px;
             grid-auto-flow: column;
