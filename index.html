@@ -359,7 +359,7 @@
                     athleteStats = data.stats;
                     isMetric = data.isMetric;
                     dataStatus = "";
-                    authorizeContainer.classList.add('hidden');
+                    authorizeContainer.remove();
                 } else {
                     ({ runMap, overview } = generateDummyRunMap(startDate, now, isMetric));
                     dataStatus = "Error fetching Strava data. Displaying dummy data.";
