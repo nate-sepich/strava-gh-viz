@@ -53,6 +53,12 @@
             border: 1px solid #ccc;
         }
 
+        .day[data-intensity="0"] { background-color: white; }
+        .day[data-intensity="1"] { background-color: #c6e48b; }
+        .day[data-intensity="2"] { background-color: #7bc96f; }
+        .day[data-intensity="3"] { background-color: #239a3b; }
+        .day[data-intensity="4"] { background-color: #196127; }
+
         .tooltip {
             visibility: hidden;
             background-color: black;
@@ -91,6 +97,7 @@
 
         .legend {
             display: flex;
+            flex-direction: column;
             align-items: center;
             margin-top: 5px;
             font-size: 0.9em;
@@ -105,7 +112,7 @@
         .legend-gradient {
             display: flex;
             align-items: center;
-            width: 100%;
+            width: 50%;
             height: 20px;
             background: linear-gradient(to right, #c6e48b, #7bc96f, #239a3b, #196127);
             margin-bottom: 5px;
@@ -114,7 +121,7 @@
         .legend-labels {
             display: flex;
             justify-content: space-between;
-            width: 100%;
+            width: 50%;
             font-size: 0.9em;
         }
 
@@ -443,7 +450,7 @@
 
                     const daySquare = document.createElement('div');
                     daySquare.className = 'day';
-                    daySquare.style.backgroundColor = getColorForIntensity(intensity);
+                    daySquare.dataset.intensity = intensity;
 
                     const tooltip = document.createElement('div');
                     tooltip.className = 'tooltip';
