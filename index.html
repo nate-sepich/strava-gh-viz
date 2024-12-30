@@ -191,6 +191,25 @@
         h1 {
             text-align: center;
         }
+
+        @media (max-width: 600px) {
+            body {
+                margin: 5px;
+                padding: 5px;
+            }
+            .profile-container,
+            .heatmap-container {
+                display: flex;
+                flex-direction: column;
+                max-width: 100%;
+            }
+            .profile-container img {
+                width: 80px;
+            }
+            h1, .profile-name, .legend-title {
+                font-size: 1em;
+            }
+        }
     </style>
 </head>
 <body>
