@@ -280,6 +280,31 @@
             }
         }
 
+        // Generate weighted random distance for dummy data
+        function weightedRandomDistance(isMetric) {
+            const probabilities = [
+                { range: [0, 0], weight: 50 }, // Rest day
+                { range: [3, 5], weight: 30 }, // Short run
+                { range: [6, 10], weight: 15 }, // Medium run
+                { range: [11, 16], weight: 5 } // Long run
+            ];
+
+            const totalWeight = probabilities.reduce((sum, p) => sum + p.weight, 0);
+            const random = Math.random() * totalWeight;
+
+            let cumulative = 0;
+            for (const { range, weight } of probabilities) {
+                cumulative += weight;
+                if (random <= cumulative) {
+                    const [min, max] = range;
+                    return isMetric
+                        ? (Math.random() * (max - min) + min) // Generate km
+                        : (Math.random() * ((max - min) * 0.621371) + min * 0.621371); // Generate miles
+                }
+            }
+            return 0; // Fallback in case of logic errors
+        }
+
         // Generate dummy run data for the heatmap
         function generateDummyRunMap(startDate, endDate, isMetric) {
             const runMap = {};
@@ -292,7 +317,7 @@
 
             while (currentDate <= endDate) {
                 const key = `${currentDate.getMonth() + 1}-${currentDate.getDate()}`;
-                const distance = isMetric ? Math.random() * 16 : Math.random() * 10;
+                const distance = weightedRandomDistance(isMetric); // Use weighted random distance
                 runMap[key] = distance;
                 overview.totalRuns += distance > 0 ? 1 : 0;
                 overview.totalDistance += distance;
