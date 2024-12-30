@@ -8,11 +8,11 @@ This project visualizes running activity data from Strava using an interactive h
 ## Example
 ### Example Page
 
-![Example Page](docs/page.png)
+![Example Page:](docs/page.png)
 
 ### Example Tooltip
 
-![Example Tooltip](docs/tooltip.png)
+![Example Tooltip:](docs/tooltip.png)
 
 ---
 
