@@ -23,11 +23,12 @@
             margin-top: 2px; /* Move the heatmap up by 15px */
             background-color: transparent;
             max-width: 100%; /* Fit content to the page width */
+            overflow-x: auto; /* Allow horizontal scrolling */
         }
 
         .y-axis {
             display: grid;
-            grid-template-rows: repeat(7, 10px);
+            grid-template-rows: repeat(7, 15px); /* Increased size for better readability */
             gap: 2px;
             margin-top: 10px;
             text-align: right;
@@ -37,8 +38,8 @@
 
         .heatmap {
             display: grid;
-            grid-template-columns: repeat(auto-fill, 10px);
-            grid-template-rows: repeat(7, 10px);
+            grid-template-columns: repeat(auto-fill, 15px); /* Increased size for better readability */
+            grid-template-rows: repeat(7, 15px); /* Increased size for better readability */
             gap: 2px;
             grid-auto-flow: column;
             margin-top: 2px;
@@ -47,8 +48,8 @@
         }
 
         .day {
-            width: 10px;
-            height: 10px;
+            width: 15px; /* Increased size for better readability */
+            height: 15px; /* Increased size for better readability */
             position: relative;
             border: 1px solid #ccc;
         }
@@ -76,6 +77,7 @@
             pointer-events: none;
             width: 250px;
             white-space: normal;
+            font-size: 12px; /* Increased font size for better readability */
         }
 
         .day:hover .tooltip {
@@ -139,6 +141,12 @@
         .hidden {
             display: none;
         }
+
+        .error-message {
+            color: red;
+            font-weight: bold;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -153,7 +161,7 @@
                 <p id="profile-summary"></p>
             </div>
         </section>
-        <p id="data-status"></p>
+        <p id="data-status" class="error-message"></p>
         <div class="heatmap-container">
             <div class="y-axis">
                 <div></div>
@@ -299,8 +307,8 @@
                     const totalRuns = Object.values(runMap).filter(distance => distance > 0).length;
                     document.getElementById('profile-summary').innerHTML = 
                         `Total Runs: ${athleteStats.all_run_totals.count}<br>` +
-                        `Total Distance: ${(athleteStats.all_run_totals.distance / (isMetric ? 1000 : 1609.34)).toFixed(2)} ${distanceUnit}<br> <br> <br>` +
-                        `Longest Run: ${Math.max(...Object.values(runMap)).toFixed(2)} <br> ${distanceUnit} ` +
+                        `Total Distance: ${(athleteStats.all_run_totals.distance / (isMetric ? 1000 : 1609.34)).toFixed(2)} ${distanceUnit}<br>` +
+                        `Longest Run: ${Math.max(...Object.values(runMap)).toFixed(2)} ${distanceUnit}<br>` +
                         `${totalDistance.toFixed(2)} ${distanceUnit} over ${totalRuns} runs in the last year`;
                 }
             } else {
@@ -330,7 +338,7 @@
             const lastDayOfRange = new Date();
             const weeksInRange = Math.ceil((lastDayOfRange - firstDayOfRange) / (7 * 24 * 3600 * 1000));
 
-            heatmapContainer.style.gridTemplateColumns = `repeat(${weeksInRange}, 10px)`;
+            heatmapContainer.style.gridTemplateColumns = `repeat(${weeksInRange}, 15px)`; /* Adjusted size */
 
             let prevMonth = null;
             let prevMonthEndWeek = 0;
@@ -394,10 +402,10 @@
             const step = maxDistance / 4;
 
             const legendItems = [
-                { color: '#c6e48b', label: '0.1+' },
-                { color: '#7bc96f', label: `${step.toFixed(2).replace(/^0+/, '')}+` },
-                { color: '#239a3b', label: `${(step * 2).toFixed(2).replace(/^0+/, '')}+` },
-                { color: '#196127', label: `${(step * 3).toFixed(2).replace(/^0+/, '')}+` },
+                { color: '#c6e48b', label: `0.1+ ${isMetric ? 'km' : 'miles'}` },
+                { color: '#7bc96f', label: `${step.toFixed(2).replace(/^0+/, '')}+ ${isMetric ? 'km' : 'miles'}` },
+                { color: '#239a3b', label: `${(step * 2).toFixed(2).replace(/^0+/, '')}+ ${isMetric ? 'km' : 'miles'}` },
+                { color: '#196127', label: `${(step * 3).toFixed(2).replace(/^0+/, '')}+ ${isMetric ? 'km' : 'miles'}` },
             ];
 
             legendItems.forEach(item => {
