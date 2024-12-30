@@ -127,10 +127,36 @@
             align-items: center;
         }
 
+        .profile-container {
+            display: flex;
+            align-items: center;
+            background: #f8f8f8;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
         .profile-container img {
             width: 100px;
             height: auto;
             border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .profile-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .profile-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .profile-summary {
+            font-size: 0.9em;
         }
 
         .powered-by-strava {
@@ -155,9 +181,9 @@
     <main>
         <section id="profile" class="profile-container hidden">
             <img id="profile-picture" src="" alt="Profile Picture">
-            <div>
-                <p id="profile-name"></p>
-                <p id="profile-summary"></p>
+            <div class="profile-details">
+                <div id="profile-name" class="profile-name"></div>
+                <div id="profile-summary" class="profile-summary"></div>
             </div>
         </section>
         <p id="data-status" class="error-message"></p>
