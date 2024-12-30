@@ -188,6 +188,14 @@
             margin-top: 20px;
         }
 
+        .mobile-notice {
+            display: none;
+            font-size: 0.8em;
+            text-align: center;
+            color: #777;
+            margin-bottom: 10px;
+        }
+
         h1 {
             text-align: center;
         }
@@ -223,6 +231,13 @@
             }
             .powered-by-strava img {
                 height: 24px;
+            }            
+            .error-message {
+                white-space: normal;
+                word-break: break-word;
+            }
+            .mobile-notice {
+                display: block;
             }
         }
     </style>
@@ -231,6 +246,9 @@
     <header>
         <h1>Strava Activity Heatmap</h1>
     </header>
+    <div class="mobile-notice">
+        For the best experience, rotate your device horizontally.
+    </div>
     <main>
         <section id="profile" class="profile-container hidden">
             <img id="profile-picture" src="" alt="Profile Picture">
