@@ -1,7 +1,7 @@
 # Strava Running Activity Visualization
 
 ## Introduction
-This is a simple Flask-based UI with an authentication mechanism that connects to the Strava API to fetch and display the developer's running activities over the last year. It visualizes the data as a heatmap, providing a summary of total runs and mileage.
+This project visualizes running activity data from Strava using an interactive heatmap. Users can authenticate with Strava to display their actual data or view example data as a fallback. Key features include profile summaries, activity heatmaps, and hover-based tooltips.
 
 ---
 
@@ -16,123 +16,51 @@ This is a simple Flask-based UI with an authentication mechanism that connects t
 
 ---
 
-## Requirements
-To use this application, you need:
-- **Python** (v3.7+ recommended)
-- A **Strava Developer Account** with an application created
-- Strava Developer **Client ID** and **Client Secret**
-
----
-
-## Setup and Installation
-
-1. **Clone the Repository**  
-    Clone the project from your repository to your local machine.
-
-    ```bash
-    git clone https://github.com/nate-sepich/strava-gh-viz.git
-    cd strava-gh-viz
-    ```
-
-2. **Install Dependencies**  
-    Install all the required dependencies using pip:
-
-    ```bash
-    cd flask-app
-    pip install -r requirements.txt
-    ```
-
-3. **Setup Environment Variables**  
-    Create a `.env` file in the flask-app folder and add your Strava credentials:
-
-    ```plaintext
-    CLIENT_ID=<your_client_id>
-    CLIENT_SECRET=<your_client_secret>
-    ```
-
-4. **Run the Flask Application**  
-    Navigate to the `flask-app` directory and start the app:
-
-    ```bash
-    cd flask-app
-    python app.py
-    ```
-
-5. **Authorize the Application**  
-    Open the authorization link printed in the terminal.
-    Grant access to your Strava data.
-    After successful authorization, the application will redirect you to the UI.
-
----
+## Access the Visualization
+The page is live and accessible at:
+https://nate-sepich.github.io/strava-gh-viz/
 
 ## Features
-- **Authentication**: Uses OAuth 2.0 to securely fetch your Strava activities.
-- **Data Visualization**: Displays a GitHub-like heatmap of your running activity.
-- **Summary Statistics**: Provides a summary of total runs and total mileage for the year.
-
----
-
-## How It Works
-### File Overview
-- **app.py**  
-  Handles the core Flask application logic:
-  - Fetches user profile and running activity data from Strava.
-  - Prepares the data for visualization.
-  - Renders the heatmap and summary statistics on the UI.
-
-- **auth.py**  
-  Manages Strava authentication:
-  - Refreshes expired tokens.
-  - Guides the user through the authorization process.
-
-- **index.html**  
-  Provides the front-end structure and heatmap rendering logic.
-  Includes tooltips and a color-coded legend for activity intensity.
-
----
+- OAuth Authentication: Securely connect and fetch Strava activity data.
+- Interactive Heatmap: Displays running activity intensity over the last year.
+- Profile Summary: Showcases total runs, mileage, and longest run.
+- Responsive Design: Optimized for both desktop and mobile users.
+- Example Data: Displays realistic dummy data when authorization is not provided.
 
 ## Usage
-### Starting the App
-Once the app is running locally, open the provided link in your browser. You’ll see:
-- A heatmap representing your running activity intensity.
-- A summary of your total runs and mileage.
+- Visit the live page: https://nate-sepich.github.io/strava-gh-viz/.
+- Authorize Strava:
+  - Click "Connect with Strava" to securely link your account.
+- View your running activities over the past year.
+- **Interpreting the Heatmap:**
+  - Each square represents a day's activity.
+  - Colors range from light green (low intensity) to dark green (high intensity).
+  - Hover over squares to view detailed stats.
+- **Example Data:**
+  - If you don’t connect your Strava account, example data will be displayed.
 
-### Understanding the Heatmap
-- Each square represents a day of the week for a specific week of the year.
-- Colors indicate activity intensity:
-  - Gray: No activity
-  - Light green: Low intensity
-  - Dark green: High intensity
+## How It Works
+### Data Collection:
+Fetches data via Strava's API for the last 365 days.
+### Heatmap Rendering:
+Displays days of activity intensity color-coded based on distance.
+### Fallback:
+Uses realistic dummy data when API data isn't available or when authorization is not provided.
 
----
-
-## Notes
-- Ensure your Strava Developer App is set up correctly with the necessary scopes:
-  - `read_all`
-  - `profile:read_all`
-  - `activity:read_all`
-- If your Strava token expires, the app will automatically refresh it.
-
----
+## API Endpoints
+- Authorization: https://www.strava.com/oauth/token
+- Profile Data: https://www.strava.com/api/v3/athlete
+- Activity Data: https://www.strava.com/api/v3/athlete/activities
 
 ## Troubleshooting
-### No Data Displayed
-Ensure that your Strava account has activities logged in the past year and that the app is authorized to read your data.
-
-### Authorization Issues
-Double-check the `CLIENT_ID` and `CLIENT_SECRET` values in the `.env` file.
-
-### Missing Heatmap or UI Elements
-Ensure your `index.html` and CSS are correctly linked and not modified unintentionally.
-
----
+- **No Data Displayed:** Ensure you’ve authorized the app and that your Strava account contains activities from the last year.
+- **Authorization Issues:** Double-check your connection to Strava and reauthorize if necessary.
+- **Missing UI Elements:** Ensure you are visiting the correct URL: https://nate-sepich.github.io/strava-gh-viz/.
 
 ## Future Enhancements
-- Add filters for activity types and date ranges.
-- Improve mobile responsiveness.
-- Integrate additional metrics like elevation gain or average pace.
-
----
+- Filters for activity types (e.g., runs, rides).
+- Support for additional activity metrics like elevation gain or pace.
+- Enhanced mobile experience.
 
 ## License
 This project is licensed under the MIT License.

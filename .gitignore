@@ -2,3 +2,8 @@
 **.vscode**
 **.env**
 **token.json**
+
+# Local Netlify folder
+.netlify
+"sendgrid.env"
+.env

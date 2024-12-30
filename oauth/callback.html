@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OAuth Callback</title>
+    <script>
+        // Extract 'code' and 'state' from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        const state = urlParams.get('state');
+
+        if (code) {
+            console.log('Authorization code received:', code); // Add this line for debugging
+            // Redirect to Netlify function with the authorization code
+            window.location.href = `https://euphonious-mochi-90f5d4.netlify.app/.netlify/functions/auth?code=${code}&state=${state}`;
+        } else {
+            document.body.innerHTML = "<p>Error: Missing authorization code.</p>";
+        }
+    </script>
+</head>
+<body>
+    <p>Processing authentication...</p>
+</body>
+</html>
