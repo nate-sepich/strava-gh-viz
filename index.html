@@ -467,15 +467,16 @@
             const legendContainer = document.getElementById('legend');
             legendContainer.innerHTML = '';
 
-            const distances = Object.values(runMap);
+            const distances = Object.values(runMap).filter(distance => distance > 0);
+            const minDistance = Math.min(...distances);
             const maxDistance = Math.max(...distances);
-            const step = maxDistance / 4;
+            const step = (maxDistance - minDistance) / 4;
 
             const legendItems = [
-                { color: '#c6e48b', label: `0.1+ ${isMetric ? 'km' : 'miles'}` },
-                { color: '#7bc96f', label: `${step.toFixed(2).replace(/^0+/, '')}+ ${isMetric ? 'km' : 'miles'}` },
-                { color: '#239a3b', label: `${(step * 2).toFixed(2).replace(/^0+/, '')}+ ${isMetric ? 'km' : 'miles'}` },
-                { color: '#196127', label: `${(step * 3).toFixed(2).replace(/^0+/, '')}+ ${isMetric ? 'km' : 'miles'}` },
+                { color: '#c6e48b', label: `${minDistance.toFixed(2)}+ ` },
+                { color: '#7bc96f', label: `${(minDistance + step).toFixed(2)}+ ` },
+                { color: '#239a3b', label: `${(minDistance + step * 2).toFixed(2)}+ ` },
+                { color: '#196127', label: `${(minDistance + step * 3).toFixed(2)}+ ${isMetric ? 'km' : 'miles'}` },
             ];
 
             legendItems.forEach(item => {
@@ -499,7 +500,7 @@
     </script>
     <footer class="temp-ai-footer">
         <img src="components/temp-ai.png" alt="temp-ai logo" style="width: 20px; height: auto;">
-        A <strong>temp-ai</strong> tool
+        a <strong>temp-ai</strong> tool
     </footer>
 </body>
 </html>
